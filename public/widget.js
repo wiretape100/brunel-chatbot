@@ -112,7 +112,6 @@
       border-radius: 8px;
       font-size: 14px;
       line-height: 1.45;
-      white-space: pre-wrap;
     }
 
     .brunel-chat-message.bot {
@@ -125,6 +124,41 @@
       margin-left: auto;
       background: #007f73;
       color: #ffffff;
+      white-space: pre-wrap;
+    }
+
+    .brunel-chat-message p {
+      margin: 0 0 8px;
+    }
+
+    .brunel-chat-message p:last-child,
+    .brunel-chat-message ul:last-child,
+    .brunel-chat-message ol:last-child {
+      margin-bottom: 0;
+    }
+
+    .brunel-chat-message ul,
+    .brunel-chat-message ol {
+      margin: 0 0 8px;
+      padding-left: 18px;
+    }
+
+    .brunel-chat-message li {
+      margin: 0 0 5px;
+    }
+
+    .brunel-chat-heading {
+      margin: 0 0 7px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .brunel-chat-message code {
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: #edf3f5;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
     }
 
     .brunel-chat-sources {
@@ -315,10 +349,10 @@
         throw new Error(payload.error || "Chat request failed.");
       }
 
-      pending.textContent = payload.answer || "No answer returned.";
+      setMessageContent(pending, payload.answer || "No answer returned.", true);
       renderSources(pending, payload.sources || []);
     } catch (error) {
-      pending.textContent = "I could not reach the chatbot service. Please try again in a moment.";
+      setMessageContent(pending, "I could not reach the chatbot service. Please try again in a moment.", false);
     } finally {
       setBusy(false);
       scrollToEnd();
@@ -328,10 +362,79 @@
   function appendMessage(role, text) {
     var node = document.createElement("div");
     node.className = "brunel-chat-message " + role;
-    node.textContent = text;
+    setMessageContent(node, text, role === "bot");
     messages.appendChild(node);
     scrollToEnd();
     return node;
+  }
+
+  function setMessageContent(node, text, allowMarkdown) {
+    if (allowMarkdown) {
+      node.innerHTML = renderMarkdown(text);
+    } else {
+      node.textContent = text;
+    }
+  }
+
+  function renderMarkdown(text) {
+    var lines = String(text || "").replace(/\r/g, "").split("\n");
+    var html = "";
+    var listType = null;
+
+    lines.forEach(function (line) {
+      var heading = line.match(/^#{1,6}\s+(.+)$/);
+      var unordered = line.match(/^\s*[-*]\s+(.+)$/);
+      var ordered = line.match(/^\s*\d+\.\s+(.+)$/);
+
+      if (!line.trim()) {
+        closeList();
+        return;
+      }
+
+      if (heading) {
+        closeList();
+        html += '<div class="brunel-chat-heading">' + formatInline(heading[1]) + "</div>";
+        return;
+      }
+
+      if (unordered) {
+        openList("ul");
+        html += "<li>" + formatInline(unordered[1]) + "</li>";
+        return;
+      }
+
+      if (ordered) {
+        openList("ol");
+        html += "<li>" + formatInline(ordered[1]) + "</li>";
+        return;
+      }
+
+      closeList();
+      html += "<p>" + formatInline(line) + "</p>";
+    });
+
+    closeList();
+    return html;
+
+    function openList(type) {
+      if (listType === type) return;
+      closeList();
+      listType = type;
+      html += "<" + type + ">";
+    }
+
+    function closeList() {
+      if (!listType) return;
+      html += "</" + listType + ">";
+      listType = null;
+    }
+  }
+
+  function formatInline(text) {
+    return escapeHtml(text)
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*([^*\n]+)\*/g, "<em>$1</em>");
   }
 
   function renderSources(messageNode, sources) {
