@@ -1,0 +1,51 @@
+[
+  {
+    "id": "home",
+    "type": "webpage",
+    "title": "The Brunel Centre homepage",
+    "url": "https://www.thebrunelcentre.co.uk/",
+    "tags": ["about", "overview"]
+  },
+  {
+    "id": "about",
+    "type": "webpage",
+    "title": "About the Brunel Centre",
+    "url": "https://www.thebrunelcentre.co.uk/about-us",
+    "tags": ["about"]
+  },
+  {
+    "id": "strategic-economic-audit",
+    "type": "webpage",
+    "title": "Strategic Economic Audit of the West of England",
+    "url": "https://www.thebrunelcentre.co.uk/research/strategic-economic-audit-of-the-west-of-england",
+    "tags": ["research", "economy", "strategy"]
+  },
+  {
+    "id": "wage-premium",
+    "type": "webpage",
+    "title": "A distinctive earnings advantage: Drivers of the West of England's wage premium",
+    "url": "https://www.thebrunelcentre.co.uk/research/a-distinctive-earnings-advantage-drivers-of-the-west-of-england%E2%80%99s-wage-premium",
+    "tags": ["research", "wages", "employment"]
+  },
+  {
+    "id": "distinctive-economy",
+    "type": "webpage",
+    "title": "What makes the West of England economy distinctive?",
+    "url": "https://www.thebrunelcentre.co.uk/research/what-makes-the-west-of-england-economy-distinctive",
+    "tags": ["research", "economy", "sectors"]
+  },
+  {
+    "id": "employment-rates",
+    "type": "webpage",
+    "title": "Employment rates in the Greater West of England compared to other UK regions",
+    "url": "https://www.thebrunelcentre.co.uk/data-hub/employment-rates-in-the-greater-west-of-england-compared-to-other-uk-regions",
+    "tags": ["data-hub", "employment"]
+  },
+  {
+    "id": "gdp",
+    "type": "webpage",
+    "title": "Gross domestic product (GDP) in the Greater West of England",
+    "url": "https://www.thebrunelcentre.co.uk/data-hub/gross-domestic-product-%28gdp%29-in-the-greater-west-of-england",
+    "tags": ["data-hub", "economy", "productivity"]
+  }
+]
