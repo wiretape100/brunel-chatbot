@@ -24,9 +24,25 @@ export default async function handler(req, res) {
       return;
     }
 
-    const result = await ingestSources();
-    res.status(200).json({ ok: true, ...result });
+    const result = await ingestSources({
+      offset: parsePositiveInteger(req.query.offset, 0),
+      limit: parseOptionalPositiveInteger(req.query.limit)
+    });
+
+    res.status(200).json({ ok: result.failed === 0, ...result });
   } catch (error) {
     sendError(res, 500, "Ingestion failed.", error.message);
   }
+}
+
+function parsePositiveInteger(value, fallback) {
+  const parsed = Number.parseInt(String(value ?? ""), 10);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+}
+
+function parseOptionalPositiveInteger(value) {
+  if (value === undefined || value === null || value === "") return undefined;
+
+  const parsed = Number.parseInt(String(value), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
 }

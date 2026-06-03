@@ -14,7 +14,7 @@ Add these in Vercel under Project Settings -> Environment Variables:
 
 ```txt
 OPENAI_API_KEY=sk-your-openai-key
-OPENAI_CHAT_MODEL=gpt-4.1-mini
+OPENAI_CHAT_MODEL=gpt-5.4-mini
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 
 SUPABASE_URL=https://your-project-ref.supabase.co
@@ -38,7 +38,7 @@ You already ran this SQL. A copy is in `sql/schema.sql` in case you need it agai
 5. Add the environment variables above.
 6. Deploy.
 
-## Ingest Test Content
+## Ingest Content
 
 After Vercel deploys, open this URL in your browser:
 
@@ -48,7 +48,19 @@ https://YOUR-VERCEL-APP.vercel.app/api/ingest?secret=YOUR_INGEST_SECRET
 
 You should see JSON with `ok: true` and a chunk count.
 
-Start with the pages in `content/sources.json`. For the MVP, keep this list small. Once the answers look good, you can add more Research and Data Hub URLs.
+The current `content/sources.json` contains the Brunel overview pages plus all published Research and Data Hub posts from the CMS export.
+
+For the full 90-post import, use batches so Vercel does not time out:
+
+```txt
+https://YOUR-VERCEL-APP.vercel.app/api/ingest?secret=YOUR_INGEST_SECRET&offset=0&limit=20
+https://YOUR-VERCEL-APP.vercel.app/api/ingest?secret=YOUR_INGEST_SECRET&offset=20&limit=20
+https://YOUR-VERCEL-APP.vercel.app/api/ingest?secret=YOUR_INGEST_SECRET&offset=40&limit=20
+https://YOUR-VERCEL-APP.vercel.app/api/ingest?secret=YOUR_INGEST_SECRET&offset=60&limit=20
+https://YOUR-VERCEL-APP.vercel.app/api/ingest?secret=YOUR_INGEST_SECRET&offset=80&limit=20
+```
+
+Each response includes `has_more` and `next_offset`. Continue until `has_more` is `false`.
 
 ## Test the Widget
 

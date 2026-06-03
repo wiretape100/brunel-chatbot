@@ -1,51 +1,1056 @@
-[
-  {
-    "id": "home",
-    "type": "webpage",
-    "title": "The Brunel Centre homepage",
-    "url": "https://www.thebrunelcentre.co.uk/",
-    "tags": ["about", "overview"]
-  },
-  {
-    "id": "about",
-    "type": "webpage",
-    "title": "About the Brunel Centre",
-    "url": "https://www.thebrunelcentre.co.uk/about-us",
-    "tags": ["about"]
-  },
-  {
-    "id": "strategic-economic-audit",
-    "type": "webpage",
-    "title": "Strategic Economic Audit of the West of England",
-    "url": "https://www.thebrunelcentre.co.uk/research/strategic-economic-audit-of-the-west-of-england",
-    "tags": ["research", "economy", "strategy"]
-  },
-  {
-    "id": "wage-premium",
-    "type": "webpage",
-    "title": "A distinctive earnings advantage: Drivers of the West of England's wage premium",
-    "url": "https://www.thebrunelcentre.co.uk/research/a-distinctive-earnings-advantage-drivers-of-the-west-of-england%E2%80%99s-wage-premium",
-    "tags": ["research", "wages", "employment"]
-  },
-  {
-    "id": "distinctive-economy",
-    "type": "webpage",
-    "title": "What makes the West of England economy distinctive?",
-    "url": "https://www.thebrunelcentre.co.uk/research/what-makes-the-west-of-england-economy-distinctive",
-    "tags": ["research", "economy", "sectors"]
-  },
-  {
-    "id": "employment-rates",
-    "type": "webpage",
-    "title": "Employment rates in the Greater West of England compared to other UK regions",
-    "url": "https://www.thebrunelcentre.co.uk/data-hub/employment-rates-in-the-greater-west-of-england-compared-to-other-uk-regions",
-    "tags": ["data-hub", "employment"]
-  },
-  {
-    "id": "gdp",
-    "type": "webpage",
-    "title": "Gross domestic product (GDP) in the Greater West of England",
-    "url": "https://www.thebrunelcentre.co.uk/data-hub/gross-domestic-product-%28gdp%29-in-the-greater-west-of-england",
-    "tags": ["data-hub", "economy", "productivity"]
-  }
+﻿[
+    {
+        "id":  "home",
+        "type":  "webpage",
+        "title":  "The Brunel Centre homepage",
+        "url":  "https://www.thebrunelcentre.co.uk/",
+        "tags":  [
+                     "about",
+                     "overview"
+                 ]
+    },
+    {
+        "id":  "about",
+        "type":  "webpage",
+        "title":  "About the Brunel Centre",
+        "url":  "https://www.thebrunelcentre.co.uk/about-us",
+        "tags":  [
+                     "about"
+                 ]
+    },
+    {
+        "id":  "data-hub",
+        "type":  "webpage",
+        "title":  "Data Hub landing page",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub",
+        "tags":  [
+                     "data-hub",
+                     "overview"
+                 ]
+    },
+    {
+        "id":  "research",
+        "type":  "webpage",
+        "title":  "Research landing page",
+        "url":  "https://www.thebrunelcentre.co.uk/research",
+        "tags":  [
+                     "research",
+                     "overview"
+                 ]
+    },
+    {
+        "id":  "consultancy",
+        "type":  "webpage",
+        "title":  "Consultancy",
+        "url":  "https://www.thebrunelcentre.co.uk/consultancy",
+        "tags":  [
+                     "consultancy"
+                 ]
+    },
+    {
+        "id":  "data-hub-child-poverty-before-housing-costs-in-the-greater-west-of-england-(children-aged-0-15)",
+        "type":  "webpage",
+        "title":  "Child poverty before housing costs in the Greater West of England (Children, aged 0-15)",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/child-poverty-before-housing-costs-in-the-greater-west-of-england-(children-aged-0-15)",
+        "tags":  [
+                     "data-hub",
+                     "inequality",
+                     "population"
+                 ]
+    },
+    {
+        "id":  "data-hub-child-poverty-before-housing-costs-in-the-greater-west-of-england-(dependent-children-aged-0-19)",
+        "type":  "webpage",
+        "title":  "Child poverty before housing costs in the Greater West of England (Dependent children, aged 0-19)",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/child-poverty-before-housing-costs-in-the-greater-west-of-england-(dependent-children-aged-0-19)",
+        "tags":  [
+                     "data-hub",
+                     "inequality",
+                     "population"
+                 ]
+    },
+    {
+        "id":  "data-hub-commuting-between-local-authorities-in-the-greater-west-of-england-2021",
+        "type":  "webpage",
+        "title":  "Commuting between local authorities in the Greater West of England, 2021",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/commuting-between-local-authorities-in-the-greater-west-of-england-2021",
+        "tags":  [
+                     "data-hub",
+                     "transport"
+                 ]
+    },
+    {
+        "id":  "data-hub-travel-to-work-in-the-greater-west-of-england-distance-travelled-and-mode-of-transport-2021",
+        "type":  "webpage",
+        "title":  "Travel to work in the Greater West of England: Distance travelled and mode of transport, 2021",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/travel-to-work-in-the-greater-west-of-england-distance-travelled-and-mode-of-transport-2021",
+        "tags":  [
+                     "data-hub",
+                     "transport"
+                 ]
+    },
+    {
+        "id":  "data-hub-travel-time-to-major-employment-centres-in-the-greater-west-of-england-2019",
+        "type":  "webpage",
+        "title":  "Travel time to major employment centres in the Greater West of England, 2019",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/travel-time-to-major-employment-centres-in-the-greater-west-of-england-2019",
+        "tags":  [
+                     "data-hub",
+                     "transport",
+                     "infrastructure"
+                 ]
+    },
+    {
+        "id":  "data-hub-access-to-key-services-in-the-greater-west-of-england-schools-town-centres-and-hospitals-2019",
+        "type":  "webpage",
+        "title":  "Access to key services in the Greater West of England: schools, town centres and hospitals, 2019",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/access-to-key-services-in-the-greater-west-of-england-schools-town-centres-and-hospitals-2019",
+        "tags":  [
+                     "data-hub",
+                     "transport",
+                     "infrastructure"
+                 ]
+    },
+    {
+        "id":  "data-hub-child-poverty-after-housing-costs-in-the-west-of-england-area-2023-24",
+        "type":  "webpage",
+        "title":  "Child poverty after housing costs in the West of England area, 2023/24",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/child-poverty-after-housing-costs-in-the-west-of-england-area-2023-24",
+        "tags":  [
+                     "data-hub",
+                     "inequality",
+                     "population"
+                 ]
+    },
+    {
+        "id":  "data-hub-additional-regional-data-on-child-poverty-in-the-south-west-of-england",
+        "type":  "webpage",
+        "title":  "Additional regional data on child poverty in the South West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/additional-regional-data-on-child-poverty-in-the-south-west-of-england",
+        "tags":  [
+                     "data-hub",
+                     "inequality",
+                     "population"
+                 ]
+    },
+    {
+        "id":  "data-hub-additional-local-detail-in-the-greater-west-of-england-2023-24",
+        "type":  "webpage",
+        "title":  "Additional local detail in the Greater West of England, 2023/24",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/additional-local-detail-in-the-greater-west-of-england-2023-24",
+        "tags":  [
+                     "data-hub",
+                     "inequality",
+                     "population"
+                 ]
+    },
+    {
+        "id":  "data-hub-population-change-comparisons-in-the-greater-west-of-england-1991–2024",
+        "type":  "webpage",
+        "title":  "Population change comparisons in the Greater West of England, 1991–2024",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/population-change-comparisons-in-the-greater-west-of-england-1991%E2%80%932024",
+        "tags":  [
+                     "data-hub",
+                     "population"
+                 ]
+    },
+    {
+        "id":  "data-hub-training-and-workforce-development-in-the-south-west-of-england",
+        "type":  "webpage",
+        "title":  "Training and workforce development in the South West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/training-and-workforce-development-in-the-south-west-of-england",
+        "tags":  [
+                     "data-hub",
+                     "skills",
+                     "economy"
+                 ]
+    },
+    {
+        "id":  "data-hub-employer-training-activity-in-the-south-west-of-england",
+        "type":  "webpage",
+        "title":  "Employer training activity in the South West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/employer-training-activity-in-the-south-west-of-england",
+        "tags":  [
+                     "data-hub",
+                     "skills",
+                     "economy"
+                 ]
+    },
+    {
+        "id":  "data-hub-employment-rates-in-the-greater-west-of-england-compared-to-other-uk-regions",
+        "type":  "webpage",
+        "title":  "Employment rates in the Greater West of England compared to other UK regions",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/employment-rates-in-the-greater-west-of-england-compared-to-other-uk-regions",
+        "tags":  [
+                     "data-hub",
+                     "employment"
+                 ]
+    },
+    {
+        "id":  "data-hub-employment-rates-in-the-greater-west-of-england-by-sex-and-age-2025",
+        "type":  "webpage",
+        "title":  "Employment rates in the Greater West of England by sex and age, 2025",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/employment-rates-in-the-greater-west-of-england-by-sex-and-age-2025",
+        "tags":  [
+                     "data-hub",
+                     "employment"
+                 ]
+    },
+    {
+        "id":  "data-hub-annual-change-in-greenhouse-gas-emissions-in-the-greater-west-of-england-2022–2023",
+        "type":  "webpage",
+        "title":  "Annual change in greenhouse gas emissions in the Greater West of England, 2022–2023",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/annual-change-in-greenhouse-gas-emissions-in-the-greater-west-of-england-2022%E2%80%932023",
+        "tags":  [
+                     "data-hub",
+                     "environment",
+                     "sustainability"
+                 ]
+    },
+    {
+        "id":  "data-hub-vacancies-and-skills-gaps-in-the-south-west-of-england-by-sector",
+        "type":  "webpage",
+        "title":  "Vacancies and skills gaps in the South West of England by sector",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/vacancies-and-skills-gaps-in-the-south-west-of-england-by-sector",
+        "tags":  [
+                     "data-hub",
+                     "skills",
+                     "economy"
+                 ]
+    },
+    {
+        "id":  "data-hub-skills-gaps-in-the-south-west-of-england",
+        "type":  "webpage",
+        "title":  "Skills gaps in the South West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/skills-gaps-in-the-south-west-of-england",
+        "tags":  [
+                     "data-hub",
+                     "skills",
+                     "economy"
+                 ]
+    },
+    {
+        "id":  "data-hub-skill-shortage-vacancies-in-the-south-west-of-england",
+        "type":  "webpage",
+        "title":  "Skill-shortage vacancies in the South West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/skill-shortage-vacancies-in-the-south-west-of-england",
+        "tags":  [
+                     "data-hub",
+                     "skills",
+                     "economy"
+                 ]
+    },
+    {
+        "id":  "data-hub-land-use-within-the-greater-west-of-england",
+        "type":  "webpage",
+        "title":  "Land use within the Greater West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/land-use-within-the-greater-west-of-england",
+        "tags":  [
+                     "data-hub",
+                     "housing",
+                     "land"
+                 ]
+    },
+    {
+        "id":  "data-hub-non-developed-land-use-across-the-greater-west-of-england",
+        "type":  "webpage",
+        "title":  "Non-developed land use across the Greater West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/non-developed-land-use-across-the-greater-west-of-england",
+        "tags":  [
+                     "data-hub",
+                     "housing",
+                     "land"
+                 ]
+    },
+    {
+        "id":  "data-hub-developed-land-use-in-the-greater-west-of-england",
+        "type":  "webpage",
+        "title":  "Developed land use in the Greater West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/developed-land-use-in-the-greater-west-of-england",
+        "tags":  [
+                     "data-hub",
+                     "housing",
+                     "land"
+                 ]
+    },
+    {
+        "id":  "data-hub-public-housing-stock-and-vacant-dwellings-in-the-greater-west-of-england-2001-onwards",
+        "type":  "webpage",
+        "title":  "Public housing stock and vacant dwellings in the Greater West of England, 2001 onwards",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/public-housing-stock-and-vacant-dwellings-in-the-greater-west-of-england-2001-onwards",
+        "tags":  [
+                     "data-hub",
+                     "housing",
+                     "infrastructure",
+                     "land"
+                 ]
+    },
+    {
+        "id":  "data-hub-net-additional-dwellings-in-the-greater-west-of-england-2001-2024",
+        "type":  "webpage",
+        "title":  "Net additional dwellings in the Greater West of England, 2001-2024",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/net-additional-dwellings-in-the-greater-west-of-england-2001-2024",
+        "tags":  [
+                     "data-hub",
+                     "housing",
+                     "infrastructure",
+                     "land"
+                 ]
+    },
+    {
+        "id":  "data-hub-housebuilding-activity-in-the-greater-west-of-england-2014-onwards",
+        "type":  "webpage",
+        "title":  "Housebuilding activity in the Greater West of England, 2014 onwards",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/housebuilding-activity-in-the-greater-west-of-england-2014-onwards",
+        "tags":  [
+                     "data-hub",
+                     "housing",
+                     "infrastructure",
+                     "land"
+                 ]
+    },
+    {
+        "id":  "data-hub-spatial-distribution-of-housing-stock-in-the-greater-west-of-england-2024",
+        "type":  "webpage",
+        "title":  "Spatial distribution of housing stock in the Greater West of England, 2024",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/spatial-distribution-of-housing-stock-in-the-greater-west-of-england-2024",
+        "tags":  [
+                     "data-hub",
+                     "housing",
+                     "infrastructure",
+                     "land"
+                 ]
+    },
+    {
+        "id":  "data-hub-greater-west-of-england-productivity-(gva)-by-industry-group-(current-prices)-2023",
+        "type":  "webpage",
+        "title":  "Greater West of England productivity (GVA) by industry group (current prices), 2023",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/greater-west-of-england-productivity-(gva)-by-industry-group-(current-prices)-2023",
+        "tags":  [
+                     "data-hub",
+                     "economy",
+                     "growth"
+                 ]
+    },
+    {
+        "id":  "data-hub-trends-in-the-number-of-private-sector-enterprises-in-the-greater-west-of-england-the-decade-up-to-2025",
+        "type":  "webpage",
+        "title":  "Trends in the number of private sector enterprises in the Greater West of England, the decade up to 2025",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/trends-in-the-number-of-private-sector-enterprises-in-the-greater-west-of-england-the-decade-up-to-2025",
+        "tags":  [
+                     "data-hub",
+                     "economy",
+                     "business"
+                 ]
+    },
+    {
+        "id":  "data-hub-number-of-businesses-in-the-greater-west-of-england-2025",
+        "type":  "webpage",
+        "title":  "Number of businesses in the Greater West of England, 2025",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/number-of-businesses-in-the-greater-west-of-england-2025",
+        "tags":  [
+                     "data-hub",
+                     "economy",
+                     "business"
+                 ]
+    },
+    {
+        "id":  "data-hub-businesses-in-the-greater-west-of-england-by-broad-industry-groups",
+        "type":  "webpage",
+        "title":  "Businesses in the Greater West of England by broad industry groups",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/businesses-in-the-greater-west-of-england-by-broad-industry-groups",
+        "tags":  [
+                     "data-hub",
+                     "economy",
+                     "business"
+                 ]
+    },
+    {
+        "id":  "data-hub-international-trade-activities-among-businesses-in-the-south-west-of-england-2023",
+        "type":  "webpage",
+        "title":  "International trade activities among businesses in the South West of England, 2023",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/international-trade-activities-among-businesses-in-the-south-west-of-england-2023",
+        "tags":  [
+                     "data-hub",
+                     "economy",
+                     "trade",
+                     "business"
+                 ]
+    },
+    {
+        "id":  "data-hub-business-sites-and-employees-linked-to-international-trade-in-the-greater-west-of-england-2023",
+        "type":  "webpage",
+        "title":  "Business sites and employees linked to international trade in the Greater West of England, 2023",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/business-sites-and-employees-linked-to-international-trade-in-the-greater-west-of-england-2023",
+        "tags":  [
+                     "data-hub",
+                     "economy",
+                     "trade",
+                     "business"
+                 ]
+    },
+    {
+        "id":  "data-hub-population-of-the-greater-west-of-england-2024",
+        "type":  "webpage",
+        "title":  "Population of the Greater West of England, 2024",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/population-of-the-greater-west-of-england-2024",
+        "tags":  [
+                     "data-hub",
+                     "population"
+                 ]
+    },
+    {
+        "id":  "data-hub-population-changes-in-the-greater-west-of-england-1991-2024",
+        "type":  "webpage",
+        "title":  "Population changes in the Greater West of England, 1991-2024",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/population-changes-in-the-greater-west-of-england-1991-2024",
+        "tags":  [
+                     "data-hub",
+                     "population"
+                 ]
+    },
+    {
+        "id":  "data-hub-components-of-population-change-in-the-greater-west-of-england-2011-12-to-2023-24",
+        "type":  "webpage",
+        "title":  "Components of population change in the Greater West of England, 2011/12 to 2023/24",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/components-of-population-change-in-the-greater-west-of-england-2011-12-to-2023-24",
+        "tags":  [
+                     "data-hub",
+                     "population"
+                 ]
+    },
+    {
+        "id":  "data-hub-projected-population-change-by-age-in-the-greater-west-of-england-2022-2047",
+        "type":  "webpage",
+        "title":  "Projected population change by age in the Greater West of England, 2022-2047",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/projected-population-change-by-age-in-the-greater-west-of-england-2022-2047",
+        "tags":  [
+                     "data-hub",
+                     "population"
+                 ]
+    },
+    {
+        "id":  "data-hub-occupational-structure-of-employment-in-the-greater-west-of-england-2024",
+        "type":  "webpage",
+        "title":  "Occupational structure of employment in the Greater West of England, 2024",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/occupational-structure-of-employment-in-the-greater-west-of-england-2024",
+        "tags":  [
+                     "data-hub",
+                     "employment"
+                 ]
+    },
+    {
+        "id":  "data-hub-population-projections-at-local-authority-level-in-the-greater-west-of-england-2022-2047",
+        "type":  "webpage",
+        "title":  "Population projections at local authority level in the Greater West of England, 2022-2047",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/population-projections-at-local-authority-level-in-the-greater-west-of-england-2022-2047",
+        "tags":  [
+                     "data-hub",
+                     "population"
+                 ]
+    },
+    {
+        "id":  "data-hub-employment-by-occupation-in-the-greater-west-of-england-by-gender-and-local-authority",
+        "type":  "webpage",
+        "title":  "Employment by occupation in the Greater West of England, by gender and local authority",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/employment-by-occupation-in-the-greater-west-of-england-by-gender-and-local-authority",
+        "tags":  [
+                     "data-hub",
+                     "employment"
+                 ]
+    },
+    {
+        "id":  "data-hub-employment-by-occupation-in-the-greater-west-of-england-2004-2024",
+        "type":  "webpage",
+        "title":  "Employment by occupation in the Greater West of England, 2004-2024",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/employment-by-occupation-in-the-greater-west-of-england-2004-2024",
+        "tags":  [
+                     "data-hub",
+                     "employment"
+                 ]
+    },
+    {
+        "id":  "data-hub-trends-in-greenhouse-gas-emissions-in-the-greater-west-of-england",
+        "type":  "webpage",
+        "title":  "Trends in greenhouse gas emissions in the Greater West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/trends-in-greenhouse-gas-emissions-in-the-greater-west-of-england",
+        "tags":  [
+                     "data-hub",
+                     "environment",
+                     "sustainability"
+                 ]
+    },
+    {
+        "id":  "data-hub-trends-over-time-in-sustained-destinations-following-16–18-study-in-the-greater-west-of-england",
+        "type":  "webpage",
+        "title":  "Trends over time in sustained destinations following 16–18 study in the Greater West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/trends-over-time-in-sustained-destinations-following-16%E2%80%9318-study-in-the-greater-west-of-england",
+        "tags":  [
+                     "data-hub",
+                     "employment",
+                     "skills"
+                 ]
+    },
+    {
+        "id":  "data-hub-sustained-destinations-following-16-18-study-in-the-greater-west-of-england-2022-23",
+        "type":  "webpage",
+        "title":  "Sustained destinations following 16-18 study in the Greater West of England, 2022/23",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/sustained-destinations-following-16-18-study-in-the-greater-west-of-england-2022-23",
+        "tags":  [
+                     "data-hub",
+                     "employment",
+                     "skills"
+                 ]
+    },
+    {
+        "id":  "data-hub-education-and-training-participation-by-characteristics-in-the-greater-west-of-england-2025",
+        "type":  "webpage",
+        "title":  "Education and training participation by characteristics in the Greater West of England, 2025",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/education-and-training-participation-by-characteristics-in-the-greater-west-of-england-2025",
+        "tags":  [
+                     "data-hub",
+                     "employment",
+                     "inactivity",
+                     "skills"
+                 ]
+    },
+    {
+        "id":  "data-hub-neet-and-activity-not-known-among-16--and-17-year-olds-in-the-greater-west-of-england-2025",
+        "type":  "webpage",
+        "title":  "NEET and activity not known among 16- and 17-year-olds in the Greater West of England, 2025",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/neet-and-activity-not-known-among-16--and-17-year-olds-in-the-greater-west-of-england-2025",
+        "tags":  [
+                     "data-hub",
+                     "inactivity",
+                     "employment"
+                 ]
+    },
+    {
+        "id":  "data-hub-neet-or-activity-not-known-by-characteristic-among-16--and-17-year-olds-in-the-greater-west-of-england-2025",
+        "type":  "webpage",
+        "title":  "NEET or activity not known by characteristic among 16- and 17-year-olds in the Greater West of England, 2025",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/neet-or-activity-not-known-by-characteristic-among-16--and-17-year-olds-in-the-greater-west-of-england-2025",
+        "tags":  [
+                     "data-hub",
+                     "inactivity",
+                     "employment"
+                 ]
+    },
+    {
+        "id":  "data-hub-education-employment-and-neet-outcomes-among-young-people-in-the-greater-west-of-england-aged-16–24",
+        "type":  "webpage",
+        "title":  "Education, employment and NEET outcomes among young people in the Greater West of England aged 16–24",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/education-employment-and-neet-outcomes-among-young-people-in-the-greater-west-of-england-aged-16%E2%80%9324",
+        "tags":  [
+                     "data-hub",
+                     "employment",
+                     "inactivity",
+                     "skills"
+                 ]
+    },
+    {
+        "id":  "data-hub-education-and-training-participation-of-16--and-17-year-olds-in-the-greater-west-of-england-2025",
+        "type":  "webpage",
+        "title":  "Education and training participation of 16- and 17-year-olds in the Greater West of England, 2025",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/education-and-training-participation-of-16--and-17-year-olds-in-the-greater-west-of-england-2025",
+        "tags":  [
+                     "data-hub",
+                     "skills",
+                     "employment",
+                     "inactivity"
+                 ]
+    },
+    {
+        "id":  "data-hub-housing-affordability-ratios-across-local-authorities-in-the-greater-west-of-england-2024",
+        "type":  "webpage",
+        "title":  "Housing affordability ratios across local authorities in the Greater West of England, 2024",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/housing-affordability-ratios-across-local-authorities-in-the-greater-west-of-england-2024",
+        "tags":  [
+                     "data-hub",
+                     "housing",
+                     "land"
+                 ]
+    },
+    {
+        "id":  "data-hub-life-expectancy-inequalities-in-the-south-west-of-england",
+        "type":  "webpage",
+        "title":  "Life expectancy inequalities in the South West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/life-expectancy-inequalities-in-the-south-west-of-england",
+        "tags":  [
+                     "data-hub",
+                     "population",
+                     "health",
+                     "inequality"
+                 ]
+    },
+    {
+        "id":  "data-hub-healthy-life-expectancy-and-mortality-in-the-south-west-of-england",
+        "type":  "webpage",
+        "title":  "Healthy life expectancy and mortality in the South West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/healthy-life-expectancy-and-mortality-in-the-south-west-of-england",
+        "tags":  [
+                     "data-hub",
+                     "health",
+                     "population",
+                     "inequality"
+                 ]
+    },
+    {
+        "id":  "data-hub-greenhouse-gas-emissions-per-head-and-sectoral-composition-in-the-greater-west-of-england-2023",
+        "type":  "webpage",
+        "title":  "Greenhouse gas emissions per head and sectoral composition in the Greater West of England, 2023",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/greenhouse-gas-emissions-per-head-and-sectoral-composition-in-the-greater-west-of-england-2023",
+        "tags":  [
+                     "data-hub",
+                     "environment",
+                     "sustainability"
+                 ]
+    },
+    {
+        "id":  "data-hub-greenhouse-gas-emissions-in-the-greater-west-of-england-2023",
+        "type":  "webpage",
+        "title":  "Greenhouse gas emissions in the Greater West of England, 2023",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/greenhouse-gas-emissions-in-the-greater-west-of-england-2023",
+        "tags":  [
+                     "data-hub",
+                     "environment",
+                     "sustainability"
+                 ]
+    },
+    {
+        "id":  "data-hub-comparisons-of-greenhouse-gas-emissions-trends-across-the-greater-west-of-england-and-selected-uk-areas",
+        "type":  "webpage",
+        "title":  "Comparisons of greenhouse gas emissions trends across the Greater West of England and selected UK areas",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/comparisons-of-greenhouse-gas-emissions-trends-across-the-greater-west-of-england-and-selected-uk-areas",
+        "tags":  [
+                     "data-hub",
+                     "environment",
+                     "sustainability"
+                 ]
+    },
+    {
+        "id":  "data-hub-high-growth-enterprises-in-the-greater-west-of-england-2019-2024",
+        "type":  "webpage",
+        "title":  "High growth enterprises in the Greater West of England, 2019-2024",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/high-growth-enterprises-in-the-greater-west-of-england-2019-2024",
+        "tags":  [
+                     "data-hub",
+                     "business",
+                     "growth",
+                     "economy"
+                 ]
+    },
+    {
+        "id":  "data-hub-foreign-direct-investment-in-the-south-west-(total-number-of-projects-and-associated-jobs)",
+        "type":  "webpage",
+        "title":  "Foreign direct investment in the South West (total number of projects and associated jobs)",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/foreign-direct-investment-in-the-south-west-(total-number-of-projects-and-associated-jobs)",
+        "tags":  [
+                     "data-hub",
+                     "economy",
+                     "international"
+                 ]
+    },
+    {
+        "id":  "data-hub-gdp-variation-across-the-uk-and-greater-west-of-england-2023",
+        "type":  "webpage",
+        "title":  "GDP variation across the UK and Greater West of England, 2023",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/gdp-variation-across-the-uk-and-greater-west-of-england-2023",
+        "tags":  [
+                     "data-hub",
+                     "economy",
+                     "productivity",
+                     "growth"
+                 ]
+    },
+    {
+        "id":  "data-hub-change-in-gdp-across-uk-regions-and-local-areas-in-the-greater-west-of-england-2013-to-2023",
+        "type":  "webpage",
+        "title":  "Change in GDP across UK regions and local areas in the Greater West of England, 2013 to 2023",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/change-in-gdp-across-uk-regions-and-local-areas-in-the-greater-west-of-england-2013-to-2023",
+        "tags":  [
+                     "data-hub",
+                     "economy",
+                     "productivity",
+                     "growth"
+                 ]
+    },
+    {
+        "id":  "data-hub-foreign-direct-investment-in-the-south-west-by-project-type-and-investor-characteristics",
+        "type":  "webpage",
+        "title":  "Foreign direct investment in the South West by project type and investor characteristics",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/foreign-direct-investment-in-the-south-west-by-project-type-and-investor-characteristics",
+        "tags":  [
+                     "data-hub",
+                     "economy",
+                     "international"
+                 ]
+    },
+    {
+        "id":  "data-hub-gross-domestic-product-(gdp)-in-the-greater-west-of-england",
+        "type":  "webpage",
+        "title":  "Gross domestic product (GDP) in the Greater West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/data-hub/gross-domestic-product-(gdp)-in-the-greater-west-of-england",
+        "tags":  [
+                     "data-hub",
+                     "economy",
+                     "productivity"
+                 ]
+    },
+    {
+        "id":  "research-homes-first-closing-the-retrofit-gap",
+        "type":  "webpage",
+        "title":  "Homes first: closing the retrofit gap",
+        "url":  "https://www.thebrunelcentre.co.uk/research/homes-first-closing-the-retrofit-gap",
+        "tags":  [
+                     "research",
+                     "environment",
+                     "housing",
+                     "skills"
+                 ]
+    },
+    {
+        "id":  "research-job-matching-success-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "Job matching success in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/job-matching-success-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "employment",
+                     "skills",
+                     "inequality"
+                 ]
+    },
+    {
+        "id":  "research-mobility-and-internal-migration-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "Mobility and internal migration in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/mobility-and-internal-migration-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "population",
+                     "infrastructure",
+                     "employment"
+                 ]
+    },
+    {
+        "id":  "research-the-priority-commercial-industrial-and-public-sector-emitters",
+        "type":  "webpage",
+        "title":  "The priority commercial, industrial and public sector emitters",
+        "url":  "https://www.thebrunelcentre.co.uk/research/the-priority-commercial-industrial-and-public-sector-emitters",
+        "tags":  [
+                     "research",
+                     "environment",
+                     "sustainability",
+                     "employment"
+                 ]
+    },
+    {
+        "id":  "research-migration-trends-and-higher-education-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "Migration trends and higher education in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/migration-trends-and-higher-education-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "skills",
+                     "employment",
+                     "international"
+                 ]
+    },
+    {
+        "id":  "research-home-to-work-movement-of-workers-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "Home to work: Movement of workers in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/home-to-work-movement-of-workers-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "employment",
+                     "skills",
+                     "inequality"
+                 ]
+    },
+    {
+        "id":  "research-educational-attainment-the-west-of-englands-competitive-advantage",
+        "type":  "webpage",
+        "title":  "Educational attainment: The West of England’s competitive advantage",
+        "url":  "https://www.thebrunelcentre.co.uk/research/educational-attainment-the-west-of-englands-competitive-advantage",
+        "tags":  [
+                     "research",
+                     "employment",
+                     "inequality",
+                     "skills"
+                 ]
+    },
+    {
+        "id":  "research-bringing-decarbonisation-home-bristols-heat-network",
+        "type":  "webpage",
+        "title":  "Bringing decarbonisation home: Bristol\u0027s heat network",
+        "url":  "https://www.thebrunelcentre.co.uk/research/bringing-decarbonisation-home-bristols-heat-network",
+        "tags":  [
+                     "research",
+                     "housing",
+                     "environment"
+                 ]
+    },
+    {
+        "id":  "research-hydrogen-aviation-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "Hydrogen aviation in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/hydrogen-aviation-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "environment",
+                     "transport",
+                     "innovation"
+                 ]
+    },
+    {
+        "id":  "research-strategic-economic-audit-of-the-west-of-england",
+        "type":  "webpage",
+        "title":  "Strategic Economic Audit of the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/strategic-economic-audit-of-the-west-of-england",
+        "tags":  "research"
+    },
+    {
+        "id":  "research-the-role-of-r-d-in-the-west-of-england’s-productivity",
+        "type":  "webpage",
+        "title":  "The role of R\u0026D in the West of England’s productivity",
+        "url":  "https://www.thebrunelcentre.co.uk/research/the-role-of-r-d-in-the-west-of-england%E2%80%99s-productivity",
+        "tags":  [
+                     "research",
+                     "innovation",
+                     "productivity",
+                     "economy"
+                 ]
+    },
+    {
+        "id":  "research-understanding-the-needs-of-inward-investors-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "Understanding the needs of inward investors in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/understanding-the-needs-of-inward-investors-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "investment",
+                     "economy",
+                     "business"
+                 ]
+    },
+    {
+        "id":  "research-a-distinctive-earnings-advantage-drivers-of-the-west-of-england’s-wage-premium",
+        "type":  "webpage",
+        "title":  "A distinctive earnings advantage: Drivers of the West of England’s wage premium",
+        "url":  "https://www.thebrunelcentre.co.uk/research/a-distinctive-earnings-advantage-drivers-of-the-west-of-england%E2%80%99s-wage-premium",
+        "tags":  [
+                     "research",
+                     "economy",
+                     "employment",
+                     "wages"
+                 ]
+    },
+    {
+        "id":  "research-high-performance-and-hidden-pressures-in-the-west-of-england-labour-market",
+        "type":  "webpage",
+        "title":  "High performance and hidden pressures in the West of England labour market",
+        "url":  "https://www.thebrunelcentre.co.uk/research/high-performance-and-hidden-pressures-in-the-west-of-england-labour-market",
+        "tags":  [
+                     "research",
+                     "productivity",
+                     "inactivity",
+                     "skills"
+                 ]
+    },
+    {
+        "id":  "research-where-our-emissions-really-come-from",
+        "type":  "webpage",
+        "title":  "Where our emissions really come from",
+        "url":  "https://www.thebrunelcentre.co.uk/research/where-our-emissions-really-come-from",
+        "tags":  [
+                     "research",
+                     "environment",
+                     "economy",
+                     "sustainability"
+                 ]
+    },
+    {
+        "id":  "research-income-insecurity-and-poverty-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "Income insecurity and poverty in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/income-insecurity-and-poverty-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "inequality",
+                     "wages",
+                     "economy"
+                 ]
+    },
+    {
+        "id":  "research-land-is-tight-where-growth-can-go",
+        "type":  "webpage",
+        "title":  "Land use in the West of England: key insights and challenges",
+        "url":  "https://www.thebrunelcentre.co.uk/research/land-is-tight-where-growth-can-go",
+        "tags":  [
+                     "research",
+                     "environment",
+                     "housing",
+                     "land"
+                 ]
+    },
+    {
+        "id":  "research-decarbonising-road-transport-by-2030-what-net-must-really-mean-now",
+        "type":  "webpage",
+        "title":  "Decarbonising road transport by 2030: what ‘net’ must really mean now",
+        "url":  "https://www.thebrunelcentre.co.uk/research/decarbonising-road-transport-by-2030-what-net-must-really-mean-now",
+        "tags":  [
+                     "research",
+                     "environment",
+                     "infrastructure",
+                     "transport"
+                 ]
+    },
+    {
+        "id":  "research-aviation-risks-and-regional-opportunity",
+        "type":  "webpage",
+        "title":  "Aviation: risks and regional opportunity",
+        "url":  "https://www.thebrunelcentre.co.uk/research/aviation-risks-and-regional-opportunity",
+        "tags":  [
+                     "research",
+                     "environment",
+                     "growth",
+                     "transport"
+                 ]
+    },
+    {
+        "id":  "research-participation-gaps-and-hidden-inequalities-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "Participation gaps and hidden inequalities in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/participation-gaps-and-hidden-inequalities-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "employment",
+                     "inequality",
+                     "inactivity"
+                 ]
+    },
+    {
+        "id":  "research-transport-satisfaction-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "Transport satisfaction in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/transport-satisfaction-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "transport",
+                     "infrastructure",
+                     "economy"
+                 ]
+    },
+    {
+        "id":  "research-health-and-social-outcomes-for-children-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "Health and social outcomes for children in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/health-and-social-outcomes-for-children-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "inequality",
+                     "health",
+                     "skills"
+                 ]
+    },
+    {
+        "id":  "research-digital-infrastructure-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "Digital infrastructure in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/digital-infrastructure-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "infrastructure",
+                     "inequality",
+                     "economy"
+                 ]
+    },
+    {
+        "id":  "research-spaces-and-sectors-driving-productivity-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "Spaces and sectors driving productivity in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/spaces-and-sectors-driving-productivity-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "economy",
+                     "growth",
+                     "sectors",
+                     "productivity"
+                 ]
+    },
+    {
+        "id":  "research-regional-resilience-a-story-of-faster-growth-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "Regional resilience: A story of faster growth in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/regional-resilience-a-story-of-faster-growth-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "economy",
+                     "business",
+                     "growth"
+                 ]
+    },
+    {
+        "id":  "research-what-makes-the-west-of-england-economy-distinctive",
+        "type":  "webpage",
+        "title":  "What makes the West of England economy distinctive?",
+        "url":  "https://www.thebrunelcentre.co.uk/research/what-makes-the-west-of-england-economy-distinctive",
+        "tags":  [
+                     "research",
+                     "economy",
+                     "business",
+                     "employment",
+                     "sectors"
+                 ]
+    },
+    {
+        "id":  "research-resilience-and-shocks-covid-19-brexit-and-firm-size-polarisation",
+        "type":  "webpage",
+        "title":  "Resilience and shocks: COVID-19, Brexit and firm-size polarisation",
+        "url":  "https://www.thebrunelcentre.co.uk/research/resilience-and-shocks-covid-19-brexit-and-firm-size-polarisation",
+        "tags":  [
+                     "research",
+                     "economy",
+                     "business",
+                     "employment"
+                 ]
+    },
+    {
+        "id":  "research-the-shape-of-work-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "The shape of work in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/the-shape-of-work-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "economy",
+                     "employment",
+                     "occupation"
+                 ]
+    },
+    {
+        "id":  "research-understanding-the-west-of-englands-incubator-economy",
+        "type":  "webpage",
+        "title":  "Understanding the West of England’s incubator economy",
+        "url":  "https://www.thebrunelcentre.co.uk/research/understanding-the-west-of-englands-incubator-economy",
+        "tags":  [
+                     "research",
+                     "economy",
+                     "innovation",
+                     "investment"
+                 ]
+    },
+    {
+        "id":  "research-how-housing-affordability-is-impacting-regional-growth-in-the-west-of-england",
+        "type":  "webpage",
+        "title":  "How housing affordability is impacting regional growth in the West of England",
+        "url":  "https://www.thebrunelcentre.co.uk/research/how-housing-affordability-is-impacting-regional-growth-in-the-west-of-england",
+        "tags":  [
+                     "research",
+                     "housing",
+                     "infrastructure",
+                     "wages"
+                 ]
+    }
 ]
