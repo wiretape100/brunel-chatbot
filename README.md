@@ -85,7 +85,13 @@ What does the Strategic Economic Audit say about the West of England economy?
 
 ## Ingest Data Hub Datasets
 
-This optional test layer reads the public Datahub-data GitHub ZIP, parses each Data Hub post's linked Excel workbooks, and stores the analysis-sheet rows in Supabase.
+This optional test layer reads the public Datahub-data GitHub ZIP, parses each Data Hub post's linked Excel workbooks, and stores:
+
+- analysis-sheet rows for exact lookup
+- raw-sheet facts for auditable calculations
+- workbook metadata for source/method context
+
+Run `sql/dataset_schema.sql` in Supabase before ingesting. If you already ran an older version, run the updated file again; it adds the raw facts table and search function without deleting existing data.
 
 Run it in small batches:
 
@@ -99,13 +105,18 @@ Continue increasing `offset` by `5` until `has_more` is `false`.
 
 For the current test mapping, there are 59 Data Hub posts. Each batch downloads the GitHub ZIP, so keep the batch size small on Vercel Hobby.
 
+Successful dataset ingestion now returns counts for `workbooks`, `rows`, and `facts`. The `facts` count means raw workbook values were loaded.
+
 After dataset ingestion, ask exact-number questions such as:
 
 ```txt
 Which area had the highest employment rate?
 What was GDP per head in Bristol in 2023?
 What does the child poverty data say for the Greater West of England?
+Calculate the population-weighted NEET rate for Bristol and Gloucestershire.
 ```
+
+For rate calculations, the backend uses numerator and denominator counts from raw sheets where available. It will not average percentages or estimate missing counts.
 
 ## Add to Framer
 

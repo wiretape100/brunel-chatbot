@@ -1,6 +1,7 @@
 import { createOpenAIClient, createSupabaseClient } from "../lib/clients.js";
 import { getServerConfig } from "../lib/config.js";
 import { applyCors, readJsonBody, sendError } from "../lib/http.js";
+import { buildStatisticalAnswer } from "../lib/statistics.js";
 
 const SYSTEM_PROMPT = `
 You are Ask the Brunel Centre, a public-friendly economic research assistant.
@@ -9,6 +10,9 @@ If the context does not contain enough evidence, say that the available Brunel C
 Use clear language for a general public audience.
 When you use information from the context, cite the source title in the answer.
 For specific numerical questions, prefer dataset context when it is available. Mention the Data Hub post or workbook used.
+For calculations, follow official-statistics style discipline: do not add, subtract, or average percentages unless the context explicitly says that method is valid.
+For combined rates, use numerator counts divided by denominator counts. If those counts are missing, say the calculation cannot be done from the available content.
+When a verified backend calculation is provided, use that result exactly and explain its method. Do not recalculate or alter it.
 Keep answers concise unless the user asks for detail.
 Do not invent statistics, dates, sources, or policy positions.
 `.trim();
@@ -39,6 +43,12 @@ export default async function handler(req, res) {
     const openai = createOpenAIClient(config);
     const supabase = createSupabaseClient(config);
 
+    const statisticalAnswer = await buildStatisticalAnswer({ supabase, message });
+    if (statisticalAnswer) {
+      res.status(200).json(statisticalAnswer);
+      return;
+    }
+
     const embeddingResponse = await openai.embeddings.create({
       model: config.embeddingModel,
       input: message
@@ -48,7 +58,8 @@ export default async function handler(req, res) {
     const [
       { data: matches, error: matchError },
       datasetSummaries,
-      datasetRows
+      datasetRows,
+      datasetFacts
     ] = await Promise.all([
       supabase.rpc("match_brunel_documents", {
         query_embedding: queryEmbedding,
@@ -61,15 +72,19 @@ export default async function handler(req, res) {
       safeRpc(supabase, "search_brunel_dataset_rows", {
         query_text: message,
         match_count: 8
+      }),
+      safeRpc(supabase, "search_brunel_dataset_facts", {
+        query_text: message,
+        match_count: 12
       })
     ]);
 
     if (matchError) throw matchError;
 
     const sources = dedupeSources(matches || []);
-    const datasetSources = dedupeDatasetSources(datasetSummaries, datasetRows);
+    const datasetSources = dedupeDatasetSources(datasetSummaries, datasetRows, datasetFacts);
 
-    if (!sources.length && !datasetSummaries.length && !datasetRows.length) {
+    if (!sources.length && !datasetSummaries.length && !datasetRows.length && !datasetFacts.length) {
       res.status(200).json({
         answer:
           "I do not have enough Brunel Centre content loaded to answer that yet. Try asking about the Strategic Economic Audit, wages, employment rates, GDP, or what the Brunel Centre does.",
@@ -79,7 +94,7 @@ export default async function handler(req, res) {
     }
 
     const context = formatContext(matches);
-    const datasetContext = formatDatasetContext(datasetSummaries, datasetRows);
+    const datasetContext = formatDatasetContext(datasetSummaries, datasetRows, datasetFacts);
     const completion = await openai.chat.completions.create({
       model: config.chatModel,
       temperature: 0.2,
@@ -133,7 +148,7 @@ function formatContext(matches) {
     .join("\n\n---\n\n");
 }
 
-function formatDatasetContext(summaries, rows) {
+function formatDatasetContext(summaries, rows, facts) {
   const parts = [];
 
   if (summaries?.length) {
@@ -180,6 +195,37 @@ function formatDatasetContext(summaries, rows) {
     );
   }
 
+  if (facts?.length) {
+    parts.push("Raw dataset facts:");
+    parts.push(
+      facts
+        .map((fact, index) => {
+          const value = formatFactValue(fact);
+          const dimensions = Object.entries(fact.dimensions || {})
+            .filter(([, item]) => item !== null && item !== "")
+            .slice(0, 8)
+            .map(([key, item]) => `${key}: ${item}`)
+            .join("; ");
+
+          return [
+            `[Dataset fact ${index + 1}] ${fact.post_title}`,
+            `Workbook: ${fact.workbook_name}`,
+            `Sheet: ${fact.sheet_name}`,
+            fact.post_url ? `URL: ${fact.post_url}` : null,
+            fact.geography ? `Geography: ${fact.geography}` : null,
+            fact.year ? `Year: ${fact.year}` : null,
+            `Measure: ${fact.measure}`,
+            `Value: ${value}`,
+            fact.source_row ? `Source row: ${fact.source_row}` : null,
+            dimensions ? `Dimensions: ${dimensions}` : null
+          ]
+            .filter(Boolean)
+            .join("\n");
+        })
+        .join("\n\n---\n\n")
+    );
+  }
+
   return parts.join("\n\n");
 }
 
@@ -202,11 +248,11 @@ function dedupeSources(matches) {
   return sources;
 }
 
-function dedupeDatasetSources(summaries, rows) {
+function dedupeDatasetSources(summaries, rows, facts) {
   const seen = new Set();
   const sources = [];
 
-  for (const item of [...(summaries || []), ...(rows || [])]) {
+  for (const item of [...(summaries || []), ...(rows || []), ...(facts || [])]) {
     const key = item.post_url || item.post_title || item.workbook_name;
     if (!key || seen.has(key)) continue;
 
@@ -219,4 +265,15 @@ function dedupeDatasetSources(summaries, rows) {
   }
 
   return sources;
+}
+
+function formatFactValue(fact) {
+  const rawValue = fact.value !== null && fact.value !== undefined ? Number(fact.value) : null;
+
+  if (Number.isFinite(rawValue) && fact.unit === "fraction") {
+    return `${rawValue} (${(rawValue * 100).toFixed(2)}%)`;
+  }
+
+  if (Number.isFinite(rawValue)) return String(rawValue);
+  return fact.value_text || "";
 }
