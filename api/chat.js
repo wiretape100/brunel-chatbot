@@ -59,7 +59,14 @@ export default async function handler(req, res) {
     const includeRawFacts = shouldIncludeRawFacts(message);
     const retrievalQuery = buildRetrievalQuery(message, history);
 
-    const statisticalAnswer = await buildStatisticalAnswer({ supabase, message });
+    const statisticalContextMessage = shouldUseHistoryForStatisticalFollowUp(message)
+      ? retrievalQuery
+      : message;
+    const statisticalAnswer = await buildStatisticalAnswer({
+      supabase,
+      message,
+      contextMessage: statisticalContextMessage
+    });
     if (statisticalAnswer) {
       res.status(200).json(statisticalAnswer);
       return;
@@ -178,6 +185,20 @@ function buildRetrievalQuery(message, history) {
   return recent
     ? `${recent}\ncurrent user question: ${message}`
     : message;
+}
+
+function shouldUseHistoryForStatisticalFollowUp(message) {
+  const clean = String(message || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!clean) return false;
+  if (/\b(age|aged|male|female|sex|gender|split|breakdown|by)\b/.test(clean)) return false;
+
+  return /^(yes|yeah|yep|that|those|same|also|and for|what about|can you give that|give that|can you do that|do that|is that)\b/.test(clean) ||
+    /\b(as well|that as well|those as well|for that|for them)\b/.test(clean);
 }
 
 function formatContext(matches) {
