@@ -11,9 +11,10 @@ Use the recent conversation only to understand follow-up references such as "tha
 Use clear language for a general public audience.
 When you use information from the context, cite the source title in the answer.
 For ordinary numerical lookup questions, prefer Brunel Centre article context first. If the exact value is not present there, use analysis dataset rows.
-For ordinary lookup answers, keep the wording natural and cite the public source title. Do not mention raw sheets, source rows, publishers, or methodology unless the user asks for calculation, counts, methods, or detail.
+For ordinary lookup answers, keep the wording natural and cite the public source title. Do not mention raw sheets, source rows, workbook internals, publishers, or methodology unless the user asks for calculation, counts, methods, or detail.
 For specific numerical questions, prefer analysis dataset rows when article context does not include the value. Mention the Data Hub post title, and include the workbook only when helpful.
-Do not conflate different measure labels. In particular, "NEET rate" and "NEET or activity not known rate" are different measures. If the available row is "NEET/Not known", name it that way.
+Do not conflate different measure labels. In particular, "NEET rate" and "NEET or activity not known rate" are different measures. If the user asks for NEET rate, use NEET-only values. If the available row is "NEET/Not known", name it that way.
+Do not offer extra calculations or follow-up options unless the user asks for them or they are needed to clarify an ambiguity.
 For calculations, follow official-statistics style discipline: do not add, subtract, or average percentages unless the context explicitly says that method is valid.
 For combined rates, use numerator counts divided by denominator counts. If those counts are missing, say the calculation cannot be done from the available content.
 When a verified backend calculation is provided, use that result exactly and explain its method. Do not recalculate or alter it.
@@ -41,6 +42,14 @@ export default async function handler(req, res) {
 
     if (!message) {
       sendError(res, 400, "Message is required.");
+      return;
+    }
+
+    if (isGreetingOnly(message)) {
+      res.status(200).json({
+        answer: "Hi — how can I help with Brunel Centre research or data?",
+        sources: []
+      });
       return;
     }
 
@@ -118,7 +127,7 @@ export default async function handler(req, res) {
             "Brunel Centre article context:",
             context || "No article context found.",
             "",
-            "Brunel Centre dataset context:",
+            "Analysis dataset fallback context. Use this only if the article context does not contain the exact value, or if the user asks for calculation/counts/method detail:",
             datasetContext || "No dataset context found."
           ].join("\n")
         }
@@ -329,4 +338,14 @@ function formatSummaryContent(content, includeRawFacts) {
 
 function shouldIncludeRawFacts(message) {
   return /\b(calculate|calculation|compute|combined|combine|weighted|average|aggregate|cohort|count|counts|numerator|denominator|method|raw|detail|details)\b/i.test(message);
+}
+
+function isGreetingOnly(message) {
+  const clean = String(message || "")
+    .toLowerCase()
+    .replace(/[^a-z\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return /^(hi|hello|hey|hiya|good morning|good afternoon|good evening|thanks|thank you)$/.test(clean);
 }
