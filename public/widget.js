@@ -283,6 +283,7 @@
   var input = root.querySelector(".brunel-chat-input");
   var send = root.querySelector(".brunel-chat-send");
   var hasStarted = false;
+  var conversationHistory = [];
 
   button.addEventListener("click", function () {
     panel.classList.add("is-open");
@@ -336,12 +337,13 @@
     appendMessage("user", text);
     var pending = appendMessage("bot", "Checking Brunel Centre sources...");
     setBusy(true);
+    var historyForRequest = conversationHistory.slice(-8);
 
     try {
       var response = await fetch(config.apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text })
+        body: JSON.stringify({ message: text, history: historyForRequest })
       });
       var payload = await response.json();
 
@@ -349,8 +351,11 @@
         throw new Error(payload.error || "Chat request failed.");
       }
 
-      setMessageContent(pending, payload.answer || "No answer returned.", true);
+      var answer = payload.answer || "No answer returned.";
+      setMessageContent(pending, answer, true);
       renderSources(pending, payload.sources || []);
+      rememberConversation("user", text);
+      rememberConversation("assistant", answer);
     } catch (error) {
       setMessageContent(pending, "I could not reach the chatbot service. Please try again in a moment.", false);
     } finally {
@@ -366,6 +371,17 @@
     messages.appendChild(node);
     scrollToEnd();
     return node;
+  }
+
+  function rememberConversation(role, content) {
+    conversationHistory.push({
+      role: role,
+      content: String(content || "").slice(0, 1800)
+    });
+
+    if (conversationHistory.length > 10) {
+      conversationHistory = conversationHistory.slice(-10);
+    }
   }
 
   function setMessageContent(node, text, allowMarkdown) {

@@ -7,11 +7,13 @@ const SYSTEM_PROMPT = `
 You are Ask the Brunel Centre, a public-friendly economic research assistant.
 Answer only from the Brunel Centre context provided by the system.
 If the context does not contain enough evidence, say that the available Brunel Centre content does not answer the question yet.
+Use the recent conversation only to understand follow-up references such as "that", "those", "yes", "separate rates", or "is that for Bristol?". Do not introduce a new topic from history unless it is needed to resolve the current question.
 Use clear language for a general public audience.
 When you use information from the context, cite the source title in the answer.
 For ordinary numerical lookup questions, prefer Brunel Centre article context first. If the exact value is not present there, use analysis dataset rows.
 For ordinary lookup answers, keep the wording natural and cite the public source title. Do not mention raw sheets, source rows, publishers, or methodology unless the user asks for calculation, counts, methods, or detail.
 For specific numerical questions, prefer analysis dataset rows when article context does not include the value. Mention the Data Hub post title, and include the workbook only when helpful.
+Do not conflate different measure labels. In particular, "NEET rate" and "NEET or activity not known rate" are different measures. If the available row is "NEET/Not known", name it that way.
 For calculations, follow official-statistics style discipline: do not add, subtract, or average percentages unless the context explicitly says that method is valid.
 For combined rates, use numerator counts divided by denominator counts. If those counts are missing, say the calculation cannot be done from the available content.
 When a verified backend calculation is provided, use that result exactly and explain its method. Do not recalculate or alter it.
@@ -35,6 +37,7 @@ export default async function handler(req, res) {
   try {
     const body = readJsonBody(req);
     const message = String(body.message || "").trim();
+    const history = sanitizeHistory(body.history);
 
     if (!message) {
       sendError(res, 400, "Message is required.");
@@ -45,6 +48,7 @@ export default async function handler(req, res) {
     const openai = createOpenAIClient(config);
     const supabase = createSupabaseClient(config);
     const includeRawFacts = shouldIncludeRawFacts(message);
+    const retrievalQuery = buildRetrievalQuery(message, history);
 
     const statisticalAnswer = await buildStatisticalAnswer({ supabase, message });
     if (statisticalAnswer) {
@@ -54,7 +58,7 @@ export default async function handler(req, res) {
 
     const embeddingResponse = await openai.embeddings.create({
       model: config.embeddingModel,
-      input: message
+      input: retrievalQuery
     });
 
     const queryEmbedding = embeddingResponse.data[0].embedding;
@@ -73,11 +77,11 @@ export default async function handler(req, res) {
         match_count: 4
       }),
       safeRpc(supabase, "search_brunel_dataset_rows", {
-        query_text: message,
+        query_text: retrievalQuery,
         match_count: 8
       }),
       includeRawFacts ? safeRpc(supabase, "search_brunel_dataset_facts", {
-        query_text: message,
+        query_text: retrievalQuery,
         match_count: 12
       }) : Promise.resolve([])
     ]);
@@ -108,6 +112,9 @@ export default async function handler(req, res) {
           content: [
             `Question: ${message}`,
             "",
+            "Recent conversation:",
+            formatHistory(history) || "No recent conversation.",
+            "",
             "Brunel Centre article context:",
             context || "No article context found.",
             "",
@@ -133,6 +140,35 @@ async function safeRpc(supabase, name, params) {
   const { data, error } = await supabase.rpc(name, params);
   if (error) return [];
   return data || [];
+}
+
+function sanitizeHistory(history) {
+  if (!Array.isArray(history)) return [];
+
+  return history
+    .filter((item) => item && (item.role === "user" || item.role === "assistant"))
+    .map((item) => ({
+      role: item.role,
+      content: String(item.content || "").replace(/\s+/g, " ").trim().slice(0, 1200)
+    }))
+    .filter((item) => item.content)
+    .slice(-8);
+}
+
+function formatHistory(history) {
+  return history
+    .map((item) => `${item.role === "user" ? "User" : "Assistant"}: ${item.content}`)
+    .join("\n");
+}
+
+function buildRetrievalQuery(message, history) {
+  const recent = history.slice(-6)
+    .map((item) => `${item.role}: ${item.content}`)
+    .join("\n");
+
+  return recent
+    ? `${recent}\ncurrent user question: ${message}`
+    : message;
 }
 
 function formatContext(matches) {
