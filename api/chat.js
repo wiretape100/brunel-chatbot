@@ -53,6 +53,12 @@ export default async function handler(req, res) {
       return;
     }
 
+    const neetExplanation = buildNeetExplanationAnswer(message, history);
+    if (neetExplanation) {
+      res.status(200).json(neetExplanation);
+      return;
+    }
+
     const config = getServerConfig();
     const openai = createOpenAIClient(config);
     const supabase = createSupabaseClient(config);
@@ -195,10 +201,48 @@ function shouldUseHistoryForStatisticalFollowUp(message) {
     .trim();
 
   if (!clean) return false;
-  if (/\b(age|aged|male|female|sex|gender|split|breakdown|by)\b/.test(clean)) return false;
+  if (/\b(age|aged|male|female|sex|gender|split|breakdown|by|explain|difference|differences|definition|define|meaning|basically|mean|means)\b/.test(clean)) return false;
 
   return /^(yes|yeah|yep|that|those|same|also|and for|what about|can you give that|give that|can you do that|do that|is that)\b/.test(clean) ||
     /\b(as well|that as well|those as well|for that|for them)\b/.test(clean);
+}
+
+function buildNeetExplanationAnswer(message, history) {
+  const clean = normalizePlainText(message);
+  const recent = normalizePlainText(formatHistory(history));
+  const asksNeetMeaning =
+    /\b(what is|what are|what does|what do|meaning of|define|definition|basically)\b/.test(clean) &&
+    /\bneet\b/.test(clean);
+  const asksDifference =
+    /\b(explain|difference|differences|different)\b/.test(clean) &&
+    (/\bneet\b/.test(clean) || /\bneet\b/.test(recent));
+
+  if (!asksNeetMeaning && !asksDifference) return null;
+
+  return {
+    answer: [
+      "NEET means young people who are not in education, employment or training.",
+      "",
+      "In this Brunel Centre dataset, the measures are separate:",
+      "",
+      "- **NEET rate**: the proportion of 16- and 17-year-olds recorded as NEET.",
+      "- **Activity not known rate**: the proportion whose education, employment or training status is not known.",
+      "- **NEET or activity not known rate**: a combined measure that counts both groups together.",
+      "",
+      "So the NEET rates you asked for Bristol and Swindon are NEET-only values, not the combined \"NEET or activity not known\" values.",
+      "",
+      "Source: NEET and activity not known among 16- and 17-year-olds in the Greater West of England, 2025."
+    ].join("\n"),
+    sources: []
+  };
+}
+
+function normalizePlainText(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function formatContext(matches) {
