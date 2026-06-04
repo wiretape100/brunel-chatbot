@@ -21,6 +21,7 @@ SUPABASE_URL=https://your-project-ref.supabase.co
 SUPABASE_SECRET_KEY=sb_secret_your-supabase-secret-key
 
 INGEST_SECRET=make-a-long-random-password
+DATAHUB_ZIP_URL=https://codeload.github.com/thebrunelcentre/Datahub-data/zip/refs/heads/main
 ```
 
 Use the Supabase secret key only in Vercel. Do not paste it into Framer.
@@ -28,6 +29,12 @@ Use the Supabase secret key only in Vercel. Do not paste it into Framer.
 ## Supabase Setup
 
 You already ran this SQL. A copy is in `sql/schema.sql` in case you need it again.
+
+For dataset ingestion, also run:
+
+```txt
+sql/dataset_schema.sql
+```
 
 ## Deploy
 
@@ -74,6 +81,30 @@ Click the chat button and ask:
 
 ```txt
 What does the Strategic Economic Audit say about the West of England economy?
+```
+
+## Ingest Data Hub Datasets
+
+This optional test layer reads the public Datahub-data GitHub ZIP, parses each Data Hub post's linked Excel workbooks, and stores the analysis-sheet rows in Supabase.
+
+Run it in small batches:
+
+```txt
+https://YOUR-VERCEL-APP.vercel.app/api/ingest-datasets?secret=YOUR_INGEST_SECRET&offset=0&limit=5
+https://YOUR-VERCEL-APP.vercel.app/api/ingest-datasets?secret=YOUR_INGEST_SECRET&offset=5&limit=5
+https://YOUR-VERCEL-APP.vercel.app/api/ingest-datasets?secret=YOUR_INGEST_SECRET&offset=10&limit=5
+```
+
+Continue increasing `offset` by `5` until `has_more` is `false`.
+
+For the current test mapping, there are 59 Data Hub posts. Each batch downloads the GitHub ZIP, so keep the batch size small on Vercel Hobby.
+
+After dataset ingestion, ask exact-number questions such as:
+
+```txt
+Which area had the highest employment rate?
+What was GDP per head in Bristol in 2023?
+What does the child poverty data say for the Greater West of England?
 ```
 
 ## Add to Framer

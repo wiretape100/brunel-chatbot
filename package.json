@@ -11,6 +11,8 @@
     "@supabase/supabase-js": "^2.49.4",
     "cheerio": "^1.0.0",
     "dotenv": "^16.4.7",
+    "jszip": "^3.10.1",
+    "xlsx": "^0.18.5",
     "openai": "^4.95.1"
   },
   "devDependencies": {

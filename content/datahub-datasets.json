@@ -1,0 +1,533 @@
+﻿[
+    {
+        "slug":  "child-poverty-before-housing-costs-in-the-greater-west-of-england-(children-aged-0-15)",
+        "title":  "Child poverty before housing costs in the Greater West of England (Children, aged 0-15)",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/child-poverty-before-housing-costs-in-the-greater-west-of-england-(children-aged-0-15)",
+        "category":  "poverty-and-deprivation",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/poverty-and-deprivation/Child%20Poverty%20Before%20Housing%20Costs",
+        "github_path":  "data/poverty-and-deprivation/Child Poverty Before Housing Costs",
+        "zip_folder":  "Datahub-data-main/data/poverty-and-deprivation/Child poverty BHC in the Greater West of England (0-15)"
+    },
+    {
+        "slug":  "child-poverty-before-housing-costs-in-the-greater-west-of-england-(dependent-children-aged-0-19)",
+        "title":  "Child poverty before housing costs in the Greater West of England (Dependent children, aged 0-19)",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/child-poverty-before-housing-costs-in-the-greater-west-of-england-(dependent-children-aged-0-19)",
+        "category":  "poverty-and-deprivation",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/poverty-and-deprivation/Child%E2%80%AFpoverty%20BHC%20in%20the%E2%80%AFGreater%20West%20of%20England%E2%80%AF(0-19)",
+        "github_path":  "data/poverty-and-deprivation/Child poverty BHC in the Greater West of England (0-19)",
+        "zip_folder":  "Datahub-data-main/data/poverty-and-deprivation/Child poverty BHC in the Greater West of England (0-19)"
+    },
+    {
+        "slug":  "commuting-between-local-authorities-in-the-greater-west-of-england-2021",
+        "title":  "Commuting between local authorities in the Greater West of England, 2021",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/commuting-between-local-authorities-in-the-greater-west-of-england-2021",
+        "category":  "transport",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/transport/Commuting%20between%20local%20authorities%20in%20the%20Greater%20West%20of%20England%2C%202021",
+        "github_path":  "data/transport/Commuting between local authorities in the Greater West of England, 2021",
+        "zip_folder":  "Datahub-data-main/data/transport/Commuting between local authorities in the Greater West of England, 2021"
+    },
+    {
+        "slug":  "travel-to-work-in-the-greater-west-of-england-distance-travelled-and-mode-of-transport-2021",
+        "title":  "Travel to work in the Greater West of England: Distance travelled and mode of transport, 2021",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/travel-to-work-in-the-greater-west-of-england-distance-travelled-and-mode-of-transport-2021",
+        "category":  "transport",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/transport/Travel%20to%20work%20in%20the%20Greater%20West%20of%20England%3A%20Distance%20travelled%20and%20mode%20of%20transport%2C%202021",
+        "github_path":  "data/transport/Travel to work in the Greater West of England: Distance travelled and mode of transport, 2021",
+        "zip_folder":  "Datahub-data-main/data/transport/Travel to work in the Greater West of England: Distance travelled and mode of transport, 2021"
+    },
+    {
+        "slug":  "travel-time-to-major-employment-centres-in-the-greater-west-of-england-2019",
+        "title":  "Travel time to major employment centres in the Greater West of England, 2019",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/travel-time-to-major-employment-centres-in-the-greater-west-of-england-2019",
+        "category":  "transport",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/transport/Travel%20time%20to%20major%20employment%20centres%20in%20the%20Greater%20West%20of%20England%2C%202019",
+        "github_path":  "data/transport/Travel time to major employment centres in the Greater West of England, 2019",
+        "zip_folder":  "Datahub-data-main/data/transport/Travel time to major employment centres in the Greater West of England, 2019"
+    },
+    {
+        "slug":  "access-to-key-services-in-the-greater-west-of-england-schools-town-centres-and-hospitals-2019",
+        "title":  "Access to key services in the Greater West of England: schools, town centres and hospitals, 2019",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/access-to-key-services-in-the-greater-west-of-england-schools-town-centres-and-hospitals-2019",
+        "category":  "transport",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/transport/Access%20to%20key%20services%20in%20the%20Greater%20West%20of%20England%3A%20schools%2C%20town%20centres%20and%20hospitals",
+        "github_path":  "data/transport/Access to key services in the Greater West of England: schools, town centres and hospitals",
+        "zip_folder":  "Datahub-data-main/data/transport/Access to key services in the Greater West of England: schools, town centres and hospitals"
+    },
+    {
+        "slug":  "child-poverty-after-housing-costs-in-the-west-of-england-area-2023-24",
+        "title":  "Child poverty after housing costs in the West of England area, 2023/24",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/child-poverty-after-housing-costs-in-the-west-of-england-area-2023-24",
+        "category":  "poverty-and-deprivation",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/poverty-and-deprivation/Child%20Poverty%20(After%20Housing%20Costs)",
+        "github_path":  "data/poverty-and-deprivation/Child Poverty (After Housing Costs)",
+        "zip_folder":  "Datahub-data-main/data/poverty-and-deprivation/Child Poverty (After Housing Costs)"
+    },
+    {
+        "slug":  "additional-regional-data-on-child-poverty-in-the-south-west-of-england",
+        "title":  "Additional regional data on child poverty in the South West of England",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/additional-regional-data-on-child-poverty-in-the-south-west-of-england",
+        "category":  "poverty-and-deprivation",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/poverty-and-deprivation/Additional%20Regional%20Data",
+        "github_path":  "data/poverty-and-deprivation/Additional Regional Data",
+        "zip_folder":  "Datahub-data-main/data/poverty-and-deprivation/Additional Regional Data"
+    },
+    {
+        "slug":  "additional-local-detail-in-the-greater-west-of-england-2023-24",
+        "title":  "Additional local detail in the Greater West of England, 2023/24",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/additional-local-detail-in-the-greater-west-of-england-2023-24",
+        "category":  "poverty-and-deprivation",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/poverty-and-deprivation/Additional%20Local%20Detail",
+        "github_path":  "data/poverty-and-deprivation/Additional Local Detail",
+        "zip_folder":  "Datahub-data-main/data/poverty-and-deprivation/Additional Local Detail"
+    },
+    {
+        "slug":  "population-change-comparisons-in-the-greater-west-of-england-1991–2024",
+        "title":  "Population change comparisons in the Greater West of England, 1991–2024",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/population-change-comparisons-in-the-greater-west-of-england-1991–2024",
+        "category":  "population",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/population/Population%20change%20comparisons%20in%20the%20Greater%20West%20of%20England%2C%201991%E2%80%932024",
+        "github_path":  "data/population/Population change comparisons in the Greater West of England, 1991–2024",
+        "zip_folder":  "Datahub-data-main/data/population/Population change comparisons in the Greater West of England, 1991–2024"
+    },
+    {
+        "slug":  "training-and-workforce-development-in-the-south-west-of-england",
+        "title":  "Training and workforce development in the South West of England",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/training-and-workforce-development-in-the-south-west-of-england",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Training%20and%20workforce%20development",
+        "github_path":  "data/labour-market/Training and workforce development",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Training and workforce development"
+    },
+    {
+        "slug":  "employer-training-activity-in-the-south-west-of-england",
+        "title":  "Employer training activity in the South West of England",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/employer-training-activity-in-the-south-west-of-england",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Employer%20training%20activity",
+        "github_path":  "data/labour-market/Employer training activity",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Employer training activity"
+    },
+    {
+        "slug":  "employment-rates-in-the-greater-west-of-england-compared-to-other-uk-regions",
+        "title":  "Employment rates in the Greater West of England compared to other UK regions",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/employment-rates-in-the-greater-west-of-england-compared-to-other-uk-regions",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Employment%20rates%20in%20the%20Greater%20West%20of%20England%20compared%20to%20other%20UK%20regions",
+        "github_path":  "data/labour-market/Employment rates in the Greater West of England compared to other UK regions",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Employment rates in the Greater West of England compared to other UK regions"
+    },
+    {
+        "slug":  "employment-rates-in-the-greater-west-of-england-by-sex-and-age-2025",
+        "title":  "Employment rates in the Greater West of England by sex and age, 2025",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/employment-rates-in-the-greater-west-of-england-by-sex-and-age-2025",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Employment%20rates%20in%20the%20Greater%20West%20of%20England%20by%20sex%20and%20age%2C%202025",
+        "github_path":  "data/labour-market/Employment rates in the Greater West of England by sex and age, 2025",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Employment rates in the Greater West of England by sex and age, 2025"
+    },
+    {
+        "slug":  "annual-change-in-greenhouse-gas-emissions-in-the-greater-west-of-england-2022–2023",
+        "title":  "Annual change in greenhouse gas emissions in the Greater West of England, 2022–2023",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/annual-change-in-greenhouse-gas-emissions-in-the-greater-west-of-england-2022–2023",
+        "category":  "environment",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/environment/Annual%20change%20in%20greenhouse%20gas%20emissions%20in%20the%20Greater%20West%20of%20England%2C%202022%E2%80%932023",
+        "github_path":  "data/environment/Annual change in greenhouse gas emissions in the Greater West of England, 2022–2023",
+        "zip_folder":  "Datahub-data-main/data/environment/Annual change in greenhouse gas emissions in the Greater West of England, 2022–2023"
+    },
+    {
+        "slug":  "vacancies-and-skills-gaps-in-the-south-west-of-england-by-sector",
+        "title":  "Vacancies and skills gaps in the South West of England by sector",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/vacancies-and-skills-gaps-in-the-south-west-of-england-by-sector",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Vacancies%20and%20skills%20gaps%20by%20industry",
+        "github_path":  "data/labour-market/Vacancies and skills gaps by industry",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Vacancies and skills gaps by industry"
+    },
+    {
+        "slug":  "skills-gaps-in-the-south-west-of-england",
+        "title":  "Skills gaps in the South West of England",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/skills-gaps-in-the-south-west-of-england",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Skills%20gaps",
+        "github_path":  "data/labour-market/Skills gaps",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Skills gaps"
+    },
+    {
+        "slug":  "skill-shortage-vacancies-in-the-south-west-of-england",
+        "title":  "Skill-shortage vacancies in the South West of England",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/skill-shortage-vacancies-in-the-south-west-of-england",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Skill-shortage%20vacancies",
+        "github_path":  "data/labour-market/Skill-shortage vacancies",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Skill-shortage vacancies"
+    },
+    {
+        "slug":  "land-use-within-the-greater-west-of-england",
+        "title":  "Land use within the Greater West of England",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/land-use-within-the-greater-west-of-england",
+        "category":  "housing-and-land-use",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/housing-and-land-use/Land%20use%20within%20the%20Greater%20West%20of%20England",
+        "github_path":  "data/housing-and-land-use/Land use within the Greater West of England",
+        "zip_folder":  "Datahub-data-main/data/housing-and-land-use/Land use within the Greater West of England"
+    },
+    {
+        "slug":  "non-developed-land-use-across-the-greater-west-of-england",
+        "title":  "Non-developed land use across the Greater West of England",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/non-developed-land-use-across-the-greater-west-of-england",
+        "category":  "housing-and-land-use",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/housing-and-land-use/Non-developed%20land%20use%20across%20the%20Greater%20West%20of%20England",
+        "github_path":  "data/housing-and-land-use/Non-developed land use across the Greater West of England",
+        "zip_folder":  "Datahub-data-main/data/housing-and-land-use/Non-developed land use across the Greater West of England"
+    },
+    {
+        "slug":  "developed-land-use-in-the-greater-west-of-england",
+        "title":  "Developed land use in the Greater West of England",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/developed-land-use-in-the-greater-west-of-england",
+        "category":  "housing-and-land-use",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/housing-and-land-use/Developed%20land%20use%20in%20the%20Greater%20West%20of%20England",
+        "github_path":  "data/housing-and-land-use/Developed land use in the Greater West of England",
+        "zip_folder":  "Datahub-data-main/data/housing-and-land-use/Developed land use in the Greater West of England"
+    },
+    {
+        "slug":  "public-housing-stock-and-vacant-dwellings-in-the-greater-west-of-england-2001-onwards",
+        "title":  "Public housing stock and vacant dwellings in the Greater West of England, 2001 onwards",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/public-housing-stock-and-vacant-dwellings-in-the-greater-west-of-england-2001-onwards",
+        "category":  "housing-and-land-use",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/housing-and-land-use/Public%20housing%20stock%2C%20vacant%20dwellings",
+        "github_path":  "data/housing-and-land-use/Public housing stock, vacant dwellings",
+        "zip_folder":  "Datahub-data-main/data/housing-and-land-use/Public housing stock, vacant dwellings"
+    },
+    {
+        "slug":  "net-additional-dwellings-in-the-greater-west-of-england-2001-2024",
+        "title":  "Net additional dwellings in the Greater West of England, 2001-2024",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/net-additional-dwellings-in-the-greater-west-of-england-2001-2024",
+        "category":  "housing-and-land-use",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/housing-and-land-use/Net%20additional%20dwellings",
+        "github_path":  "data/housing-and-land-use/Net additional dwellings",
+        "zip_folder":  "Datahub-data-main/data/housing-and-land-use/Net additional dwellings"
+    },
+    {
+        "slug":  "housebuilding-activity-in-the-greater-west-of-england-2014-onwards",
+        "title":  "Housebuilding activity in the Greater West of England, 2014 onwards",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/housebuilding-activity-in-the-greater-west-of-england-2014-onwards",
+        "category":  "housing-and-land-use",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/housing-and-land-use/Housebuilding",
+        "github_path":  "data/housing-and-land-use/Housebuilding",
+        "zip_folder":  "Datahub-data-main/data/housing-and-land-use/Housebuilding"
+    },
+    {
+        "slug":  "spatial-distribution-of-housing-stock-in-the-greater-west-of-england-2024",
+        "title":  "Spatial distribution of housing stock in the Greater West of England, 2024",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/spatial-distribution-of-housing-stock-in-the-greater-west-of-england-2024",
+        "category":  "housing-and-land-use",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/housing-and-land-use/Dwelling%20stock",
+        "github_path":  "data/housing-and-land-use/Dwelling stock",
+        "zip_folder":  "Datahub-data-main/data/housing-and-land-use/Dwelling stock"
+    },
+    {
+        "slug":  "greater-west-of-england-productivity-(gva)-by-industry-group-(current-prices)-2023",
+        "title":  "Greater West of England productivity (GVA) by industry group (current prices), 2023",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/greater-west-of-england-productivity-(gva)-by-industry-group-(current-prices)-2023",
+        "category":  "economy",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/economy/Greater%20West%20of%20England%20GVA%20by%20industry%20group",
+        "github_path":  "data/economy/Greater West of England GVA by industry group",
+        "zip_folder":  "Datahub-data-main/data/economy/Greater West of England GVA by industry group"
+    },
+    {
+        "slug":  "trends-in-the-number-of-private-sector-enterprises-in-the-greater-west-of-england-the-decade-up-to-2025",
+        "title":  "Trends in the number of private sector enterprises in the Greater West of England, the decade up to 2025",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/trends-in-the-number-of-private-sector-enterprises-in-the-greater-west-of-england-the-decade-up-to-2025",
+        "category":  "economy",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/economy/Trends%20in%20the%20number%20of%20private%20sector%20enterprises%20in%20the%20Greater%20West%20of%20England%2C%20the%20decade%20up%20to%202025",
+        "github_path":  "data/economy/Trends in the number of private sector enterprises in the Greater West of England, the decade up to 2025",
+        "zip_folder":  "Datahub-data-main/data/economy/Trends in the number of private sector enterprises in the Greater West of England, the decade up to 2025"
+    },
+    {
+        "slug":  "number-of-businesses-in-the-greater-west-of-england-2025",
+        "title":  "Number of businesses in the Greater West of England, 2025",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/number-of-businesses-in-the-greater-west-of-england-2025",
+        "category":  "economy",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/economy/Number%20of%20businesses%20in%20the%20Greater%20West%20of%20England%2C%202025",
+        "github_path":  "data/economy/Number of businesses in the Greater West of England, 2025",
+        "zip_folder":  "Datahub-data-main/data/economy/Number of businesses in the Greater West of England, 2025"
+    },
+    {
+        "slug":  "businesses-in-the-greater-west-of-england-by-broad-industry-groups",
+        "title":  "Businesses in the Greater West of England by broad industry groups",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/businesses-in-the-greater-west-of-england-by-broad-industry-groups",
+        "category":  "economy",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/economy/Businesses%20in%20the%20Greater%20West%20of%20England%20by%20broad%20industry%20groups",
+        "github_path":  "data/economy/Businesses in the Greater West of England by broad industry groups",
+        "zip_folder":  "Datahub-data-main/data/economy/Businesses in the Greater West of England by broad industry groups"
+    },
+    {
+        "slug":  "international-trade-activities-among-businesses-in-the-south-west-of-england-2023",
+        "title":  "International trade activities among businesses in the South West of England, 2023",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/international-trade-activities-among-businesses-in-the-south-west-of-england-2023",
+        "category":  "economy",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/economy/South%20West%20exporters%20and%20importers",
+        "github_path":  "data/economy/South West exporters and importers",
+        "zip_folder":  "Datahub-data-main/data/economy/South West exporters and importers"
+    },
+    {
+        "slug":  "business-sites-and-employees-linked-to-international-trade-in-the-greater-west-of-england-2023",
+        "title":  "Business sites and employees linked to international trade in the Greater West of England, 2023",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/business-sites-and-employees-linked-to-international-trade-in-the-greater-west-of-england-2023",
+        "category":  "economy",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/economy/Local%20sites%20and%20employees",
+        "github_path":  "data/economy/Local sites and employees",
+        "zip_folder":  "Datahub-data-main/data/economy/Local sites and employees"
+    },
+    {
+        "slug":  "population-of-the-greater-west-of-england-2024",
+        "title":  "Population of the Greater West of England, 2024",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/population-of-the-greater-west-of-england-2024",
+        "category":  "population",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/population/Population%20of%20the%20Greater%20West%20of%20England",
+        "github_path":  "data/population/Population of the Greater West of England",
+        "zip_folder":  "Datahub-data-main/data/population/Population of the Greater West of England"
+    },
+    {
+        "slug":  "population-changes-in-the-greater-west-of-england-1991-2024",
+        "title":  "Population changes in the Greater West of England, 1991-2024",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/population-changes-in-the-greater-west-of-england-1991-2024",
+        "category":  "population",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/population/Population%20changes%20in%20the%20Greater%20West%20of%20England",
+        "github_path":  "data/population/Population changes in the Greater West of England",
+        "zip_folder":  "Datahub-data-main/data/population/Population changes in the Greater West of England"
+    },
+    {
+        "slug":  "components-of-population-change-in-the-greater-west-of-england-2011-12-to-2023-24",
+        "title":  "Components of population change in the Greater West of England, 2011/12 to 2023/24",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/components-of-population-change-in-the-greater-west-of-england-2011-12-to-2023-24",
+        "category":  "population",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/population/Components%20of%20population%20change%20in%20the%20Greater%20West%20of%20England%2C%202011-12%20to%202023-24",
+        "github_path":  "data/population/Components of population change in the Greater West of England, 2011-12 to 2023-24",
+        "zip_folder":  "Datahub-data-main/data/population/Components of population change in the Greater West of England, 2011-12 to 2023-24"
+    },
+    {
+        "slug":  "projected-population-change-by-age-in-the-greater-west-of-england-2022-2047",
+        "title":  "Projected population change by age in the Greater West of England, 2022-2047",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/projected-population-change-by-age-in-the-greater-west-of-england-2022-2047",
+        "category":  "population",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/population/Projected%20population%20change%20by%20age%20in%20the%20Greater%20West%20of%20England%2C%202022%20to%202047",
+        "github_path":  "data/population/Projected population change by age in the Greater West of England, 2022 to 2047",
+        "zip_folder":  "Datahub-data-main/data/population/Projected population change by age in the Greater West of England, 2022 to 2047"
+    },
+    {
+        "slug":  "occupational-structure-of-employment-in-the-greater-west-of-england-2024",
+        "title":  "Occupational structure of employment in the Greater West of England, 2024",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/occupational-structure-of-employment-in-the-greater-west-of-england-2024",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Occupational%20structure%20of%20employment%20in%20the%20GWE%2C%202024",
+        "github_path":  "data/labour-market/Occupational structure of employment in the GWE, 2024",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Occupational structure of employment in the GWE, 2024"
+    },
+    {
+        "slug":  "population-projections-at-local-authority-level-in-the-greater-west-of-england-2022-2047",
+        "title":  "Population projections at local authority level in the Greater West of England, 2022-2047",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/population-projections-at-local-authority-level-in-the-greater-west-of-england-2022-2047",
+        "category":  "population",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/population/Population%20projections%20at%20local%20authority%20level%20in%20the%20Greater%20West%20of%20England%2C%202022%20to%202047",
+        "github_path":  "data/population/Population projections at local authority level in the Greater West of England, 2022 to 2047",
+        "zip_folder":  "Datahub-data-main/data/population/Population projections at local authority level in the Greater West of England, 2022 to 2047"
+    },
+    {
+        "slug":  "employment-by-occupation-in-the-greater-west-of-england-by-gender-and-local-authority",
+        "title":  "Employment by occupation in the Greater West of England, by gender and local authority",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/employment-by-occupation-in-the-greater-west-of-england-by-gender-and-local-authority",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Employment%20by%20occupation%20in%20the%20GWE%2C%20by%20gender%20and%20LA",
+        "github_path":  "data/labour-market/Employment by occupation in the GWE, by gender and LA",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Employment by occupation in the GWE, by gender and LA"
+    },
+    {
+        "slug":  "employment-by-occupation-in-the-greater-west-of-england-2004-2024",
+        "title":  "Employment by occupation in the Greater West of England, 2004-2024",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/employment-by-occupation-in-the-greater-west-of-england-2004-2024",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Employment%20by%20occupation%20in%20the%20GWE%2C%202004%20to%202024",
+        "github_path":  "data/labour-market/Employment by occupation in the GWE, 2004 to 2024",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Employment by occupation in the GWE, 2004 to 2024"
+    },
+    {
+        "slug":  "trends-in-greenhouse-gas-emissions-in-the-greater-west-of-england",
+        "title":  "Trends in greenhouse gas emissions in the Greater West of England",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/trends-in-greenhouse-gas-emissions-in-the-greater-west-of-england",
+        "category":  "environment",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/environment/Trends%20in%20greenhouse%20gas%20emissions%20in%20the%20Greater%20West%20of%20England",
+        "github_path":  "data/environment/Trends in greenhouse gas emissions in the Greater West of England",
+        "zip_folder":  "Datahub-data-main/data/environment/Trends in greenhouse gas emissions in the Greater West of England"
+    },
+    {
+        "slug":  "trends-over-time-in-sustained-destinations-following-16–18-study-in-the-greater-west-of-england",
+        "title":  "Trends over time in sustained destinations following 16–18 study in the Greater West of England",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/trends-over-time-in-sustained-destinations-following-16–18-study-in-the-greater-west-of-england",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Trends%20in%20sustained%20destinations%20following%2016%E2%80%9318%20study%20in%20the%20GWE",
+        "github_path":  "data/labour-market/Trends in sustained destinations following 16–18 study in the GWE",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Trends in sustained destinations following 16–18 study in the GWE"
+    },
+    {
+        "slug":  "sustained-destinations-following-16-18-study-in-the-greater-west-of-england-2022-23",
+        "title":  "Sustained destinations following 16-18 study in the Greater West of England, 2022/23",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/sustained-destinations-following-16-18-study-in-the-greater-west-of-england-2022-23",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Education%20(16%E2%80%9318)%20sustained%20destinations%20in%20the%20GWE",
+        "github_path":  "data/labour-market/Education (16–18) sustained destinations in the GWE",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Education (16–18) sustained destinations in the GWE"
+    },
+    {
+        "slug":  "education-and-training-participation-by-characteristics-in-the-greater-west-of-england-2025",
+        "title":  "Education and training participation by characteristics in the Greater West of England, 2025",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/education-and-training-participation-by-characteristics-in-the-greater-west-of-england-2025",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Education%20and%20training%20participation%20by%20characteristic%20in%20the%20GWE",
+        "github_path":  "data/labour-market/Education and training participation by characteristic in the GWE",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Education and training participation by characteristic in the GWE"
+    },
+    {
+        "slug":  "neet-and-activity-not-known-among-16--and-17-year-olds-in-the-greater-west-of-england-2025",
+        "title":  "NEET and activity not known among 16- and 17-year-olds in the Greater West of England, 2025",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/neet-and-activity-not-known-among-16--and-17-year-olds-in-the-greater-west-of-england-2025",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/NEET%20and%20activity%20not%20known%20in%20GWE",
+        "github_path":  "data/labour-market/NEET and activity not known in GWE",
+        "zip_folder":  "Datahub-data-main/data/labour-market/NEET and activity not known in GWE"
+    },
+    {
+        "slug":  "neet-or-activity-not-known-by-characteristic-among-16--and-17-year-olds-in-the-greater-west-of-england-2025",
+        "title":  "NEET or activity not known by characteristic among 16- and 17-year-olds in the Greater West of England, 2025",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/neet-or-activity-not-known-by-characteristic-among-16--and-17-year-olds-in-the-greater-west-of-england-2025",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/NEET%20or%20activity%20not%20known%20by%20characteristic",
+        "github_path":  "data/labour-market/NEET or activity not known by characteristic",
+        "zip_folder":  "Datahub-data-main/data/labour-market/NEET or activity not known by characteristic"
+    },
+    {
+        "slug":  "education-employment-and-neet-outcomes-among-young-people-in-the-greater-west-of-england-aged-16–24",
+        "title":  "Education, employment and NEET outcomes among young people in the Greater West of England aged 16–24",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/education-employment-and-neet-outcomes-among-young-people-in-the-greater-west-of-england-aged-16–24",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Education%2C%20employment%20and%20NEET%20outcomes%20among%20(aged%2016%E2%80%9324)",
+        "github_path":  "data/labour-market/Education, employment and NEET outcomes among (aged 16–24)",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Education, employment and NEET outcomes among (aged 16–24)"
+    },
+    {
+        "slug":  "education-and-training-participation-of-16--and-17-year-olds-in-the-greater-west-of-england-2025",
+        "title":  "Education and training participation of 16- and 17-year-olds in the Greater West of England, 2025",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/education-and-training-participation-of-16--and-17-year-olds-in-the-greater-west-of-england-2025",
+        "category":  "labour-market",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/labour-market/Education%20and%20training%20participation",
+        "github_path":  "data/labour-market/Education and training participation",
+        "zip_folder":  "Datahub-data-main/data/labour-market/Education and training participation"
+    },
+    {
+        "slug":  "housing-affordability-ratios-across-local-authorities-in-the-greater-west-of-england-2024",
+        "title":  "Housing affordability ratios across local authorities in the Greater West of England, 2024",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/housing-affordability-ratios-across-local-authorities-in-the-greater-west-of-england-2024",
+        "category":  "housing-and-land-use",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/housing-and-land-use/Housing%20affordability%20ratios%20across%20local%20authorities%20in%20the%20Greater%20West%20of%20England%2C%202024",
+        "github_path":  "data/housing-and-land-use/Housing affordability ratios across local authorities in the Greater West of England, 2024",
+        "zip_folder":  "Datahub-data-main/data/housing-and-land-use/Housing affordability ratios across local authorities in the Greater West of England, 2024"
+    },
+    {
+        "slug":  "life-expectancy-inequalities-in-the-south-west-of-england",
+        "title":  "Life expectancy inequalities in the South West of England",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/life-expectancy-inequalities-in-the-south-west-of-england",
+        "category":  "health",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/health/Life%20expectancy%20inequalities%20in%20the%20South%20West",
+        "github_path":  "data/health/Life expectancy inequalities in the South West",
+        "zip_folder":  "Datahub-data-main/data/health/Life expectancy inequalities in the South West"
+    },
+    {
+        "slug":  "healthy-life-expectancy-and-mortality-in-the-south-west-of-england",
+        "title":  "Healthy life expectancy and mortality in the South West of England",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/healthy-life-expectancy-and-mortality-in-the-south-west-of-england",
+        "category":  "health",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/health/Healthy%20life%20expectancy%20and%20mortality%20in%20the%20South%20West",
+        "github_path":  "data/health/Healthy life expectancy and mortality in the South West",
+        "zip_folder":  "Datahub-data-main/data/health/Healthy life expectancy and mortality in the South West"
+    },
+    {
+        "slug":  "greenhouse-gas-emissions-per-head-and-sectoral-composition-in-the-greater-west-of-england-2023",
+        "title":  "Greenhouse gas emissions per head and sectoral composition in the Greater West of England, 2023",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/greenhouse-gas-emissions-per-head-and-sectoral-composition-in-the-greater-west-of-england-2023",
+        "category":  "environment",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/environment/Greenhouse%20gas%20emissions%20per%20head%20and%20sectoral%20composition%20in%20the%20Greater%20West%20of%20England",
+        "github_path":  "data/environment/Greenhouse gas emissions per head and sectoral composition in the Greater West of England",
+        "zip_folder":  "Datahub-data-main/data/environment/Greenhouse gas emissions per head and sectoral composition in the Greater West of England"
+    },
+    {
+        "slug":  "greenhouse-gas-emissions-in-the-greater-west-of-england-2023",
+        "title":  "Greenhouse gas emissions in the Greater West of England, 2023",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/greenhouse-gas-emissions-in-the-greater-west-of-england-2023",
+        "category":  "environment",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/environment/Greenhouse%20gas%20emissions%20in%20the%20Greater%20West%20of%20England",
+        "github_path":  "data/environment/Greenhouse gas emissions in the Greater West of England",
+        "zip_folder":  "Datahub-data-main/data/environment/Greenhouse gas emissions in the Greater West of England"
+    },
+    {
+        "slug":  "comparisons-of-greenhouse-gas-emissions-trends-across-the-greater-west-of-england-and-selected-uk-areas",
+        "title":  "Comparisons of greenhouse gas emissions trends across the Greater West of England and selected UK areas",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/comparisons-of-greenhouse-gas-emissions-trends-across-the-greater-west-of-england-and-selected-uk-areas",
+        "category":  "environment",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/environment/Comparisons%20of%20greenhouse%20gas%20emissions%20trends%20across%20the%20Greater%20West%20of%20England%20and%20selected%20UK%20areas",
+        "github_path":  "data/environment/Comparisons of greenhouse gas emissions trends across the Greater West of England and selected UK areas",
+        "zip_folder":  "Datahub-data-main/data/environment/Comparisons of greenhouse gas emissions trends across the Greater West of England and selected UK areas"
+    },
+    {
+        "slug":  "high-growth-enterprises-in-the-greater-west-of-england-2019-2024",
+        "title":  "High growth enterprises in the Greater West of England, 2019-2024",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/high-growth-enterprises-in-the-greater-west-of-england-2019-2024",
+        "category":  "economy",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/economy/High%20growth%20enterprises%20in%20the%20Greater%20West%20of%20England",
+        "github_path":  "data/economy/High growth enterprises in the Greater West of England",
+        "zip_folder":  "Datahub-data-main/data/economy/High growth enterprises in the Greater West of England"
+    },
+    {
+        "slug":  "foreign-direct-investment-in-the-south-west-(total-number-of-projects-and-associated-jobs)",
+        "title":  "Foreign direct investment in the South West (total number of projects and associated jobs) ",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/foreign-direct-investment-in-the-south-west-(total-number-of-projects-and-associated-jobs)",
+        "category":  "economy",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/economy/Foreign%20direct%20investment%20in%20the%20South%20West",
+        "github_path":  "data/economy/Foreign direct investment in the South West",
+        "zip_folder":  "Datahub-data-main/data/economy/Foreign direct investment in the South West"
+    },
+    {
+        "slug":  "gdp-variation-across-the-uk-and-greater-west-of-england-2023",
+        "title":  "GDP variation across the UK and Greater West of England, 2023",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/gdp-variation-across-the-uk-and-greater-west-of-england-2023",
+        "category":  "economy",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/economy/GDP%20geographic%20differences%20across%20the%20UK%20and%20the%20Greater%20West%20of%20England",
+        "github_path":  "data/economy/GDP geographic differences across the UK and the Greater West of England",
+        "zip_folder":  "Datahub-data-main/data/economy/GDP geographic differences across the UK and the Greater West of England"
+    },
+    {
+        "slug":  "change-in-gdp-across-uk-regions-and-local-areas-in-the-greater-west-of-england-2013-to-2023",
+        "title":  "Change in GDP across UK regions and local areas in the Greater West of England, 2013 to 2023",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/change-in-gdp-across-uk-regions-and-local-areas-in-the-greater-west-of-england-2013-to-2023",
+        "category":  "economy",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/economy/GDP%20comparisons%20of%20change%20across%20regions%20and%20local%20areas",
+        "github_path":  "data/economy/GDP comparisons of change across regions and local areas",
+        "zip_folder":  "Datahub-data-main/data/economy/GDP comparisons of change across regions and local areas"
+    },
+    {
+        "slug":  "foreign-direct-investment-in-the-south-west-by-project-type-and-investor-characteristics",
+        "title":  "Foreign direct investment in the South West by project type and investor characteristics",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/foreign-direct-investment-in-the-south-west-by-project-type-and-investor-characteristics",
+        "category":  "economy",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/economy/Foreign%20direct%20investment%20in%20the%20South%20West%20by%20project%20type%20and%20investor%20characteristics",
+        "github_path":  "data/economy/Foreign direct investment in the South West by project type and investor characteristics",
+        "zip_folder":  "Datahub-data-main/data/economy/Foreign direct investment in the South West by project type and investor characteristics"
+    },
+    {
+        "slug":  "gross-domestic-product-(gdp)-in-the-greater-west-of-england",
+        "title":  "Gross domestic product (GDP) in the Greater West of England",
+        "post_url":  "https://www.thebrunelcentre.co.uk/data-hub/gross-domestic-product-(gdp)-in-the-greater-west-of-england",
+        "category":  "economy",
+        "github_url":  "https://github.com/thebrunelcentre/Datahub-data/tree/main/data/economy/Gross%20domestic%20product%20in%20the%20Greater%20West%20of%20England",
+        "github_path":  "data/economy/Gross domestic product in the Greater West of England",
+        "zip_folder":  "Datahub-data-main/data/economy/Gross domestic product in the Greater West of England"
+    }
+]

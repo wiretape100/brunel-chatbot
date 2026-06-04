@@ -6,6 +6,9 @@
     },
     "api/ingest.js": {
       "maxDuration": 60
+    },
+    "api/ingest-datasets.js": {
+      "maxDuration": 60
     }
   },
   "headers": [
