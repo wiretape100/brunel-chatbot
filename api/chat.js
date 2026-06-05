@@ -1,5 +1,6 @@
 import { createOpenAIClient, createSupabaseClient } from "../lib/clients.js";
 import { getServerConfig } from "../lib/config.js";
+import { buildDataHubCatalogueAnswer } from "../lib/datahub-catalogue.js";
 import { applyCors, readJsonBody, sendError } from "../lib/http.js";
 import { buildRetrievalPlan, conceptLabel, describeRetrievalPlan, mergeSearchResults, sourceMatchesConcept } from "../lib/retrieval.js";
 import { buildStatisticalAnswer } from "../lib/statistics.js";
@@ -93,6 +94,12 @@ export default async function handler(req, res) {
         answer: SMALL_TALK_RESPONSES[smallTalkIntent],
         sources: []
       });
+      return;
+    }
+
+    const dataHubCatalogueAnswer = await buildDataHubCatalogueAnswer({ message, history });
+    if (dataHubCatalogueAnswer) {
+      res.status(200).json(dataHubCatalogueAnswer);
       return;
     }
 
