@@ -3,11 +3,35 @@ import { getServerConfig } from "../lib/config.js";
 import { applyCors, readJsonBody, sendError } from "../lib/http.js";
 import { buildStatisticalAnswer } from "../lib/statistics.js";
 
+const RETRIEVAL_EXPANSIONS = [
+  {
+    name: "Bath and North East Somerset",
+    aliases: ["bath", "barh", "banes", "bnes", "b nes", "b and nes", "bath ne somerset", "bath and ne somerset"],
+    expansion: "Bath and North East Somerset B&NES local authority"
+  },
+  {
+    name: "Bristol, City of",
+    aliases: ["bristol"],
+    expansion: "Bristol City of Bristol local authority"
+  },
+  {
+    name: "Gloucestershire",
+    aliases: ["glos"],
+    expansion: "Gloucestershire local authority"
+  },
+  {
+    name: "South Gloucestershire",
+    aliases: ["south glos"],
+    expansion: "South Gloucestershire local authority"
+  }
+];
+
 const SYSTEM_PROMPT = `
 You are Ask the Brunel Centre, a public-friendly economic research assistant.
 Answer only from the Brunel Centre context provided by the system.
 If the context does not contain enough evidence, say that the available Brunel Centre content does not answer the question yet.
 Use the recent conversation only to understand follow-up references such as "that", "those", "yes", "separate rates", or "is that for Bristol?". Do not introduce a new topic from history unless it is needed to resolve the current question.
+For geography wording, treat "Bath", "B&NES", "BANES", and close misspellings as Bath and North East Somerset. Treat "Glos" as Gloucestershire and "South Glos" as South Gloucestershire. In answers, use the official geography name when possible.
 Use clear language for a general public audience.
 When you use information from the context, cite the source title in the answer.
 For ordinary numerical lookup questions, prefer Brunel Centre article context first. If the exact value is not present there, use analysis dataset rows.
@@ -63,7 +87,11 @@ export default async function handler(req, res) {
     const openai = createOpenAIClient(config);
     const supabase = createSupabaseClient(config);
     const includeRawFacts = shouldIncludeRawFacts(message);
+    const useHistoryForRetrieval = shouldUseHistoryForRetrieval(message);
     const retrievalQuery = buildRetrievalQuery(message, history);
+    const promptHistory = useHistoryForRetrieval
+      ? formatHistory(history)
+      : "Not used because the current question is a new topic.";
 
     const statisticalContextMessage = shouldUseHistoryForStatisticalFollowUp(message)
       ? retrievalQuery
@@ -135,7 +163,7 @@ export default async function handler(req, res) {
             `Question: ${message}`,
             "",
             "Recent conversation:",
-            formatHistory(history) || "No recent conversation.",
+            promptHistory || "No recent conversation.",
             "",
             "Brunel Centre article context:",
             context || "No article context found.",
@@ -184,13 +212,45 @@ function formatHistory(history) {
 }
 
 function buildRetrievalQuery(message, history) {
+  const expandedMessage = expandRetrievalQuery(message);
+  if (!shouldUseHistoryForRetrieval(message)) return expandedMessage;
+
   const recent = history.slice(-6)
     .map((item) => `${item.role}: ${item.content}`)
     .join("\n");
 
   return recent
-    ? `${recent}\ncurrent user question: ${message}`
+    ? `${recent}\ncurrent user question: ${expandedMessage}`
+    : expandedMessage;
+}
+
+function expandRetrievalQuery(message) {
+  const clean = normalizePlainText(message);
+  const additions = [];
+
+  for (const item of RETRIEVAL_EXPANSIONS) {
+    const matched = item.aliases.some((alias) => phraseInText(clean, normalizePlainText(alias)));
+    if (matched) additions.push(item.expansion);
+  }
+
+  if (phraseInText(clean, "greater west of england") || phraseInText(clean, "gwe")) {
+    additions.push(
+      "Greater West of England Bath and North East Somerset Bristol Gloucestershire North Somerset South Gloucestershire Swindon Wiltshire local authorities"
+    );
+  }
+
+  return additions.length
+    ? `${message}\nSearch expansions: ${[...new Set(additions)].join("; ")}`
     : message;
+}
+
+function shouldUseHistoryForRetrieval(message) {
+  const clean = normalizePlainText(message);
+  if (!clean) return false;
+
+  if (isStandaloneQuestion(clean)) return false;
+
+  return isFollowUpReference(clean);
 }
 
 function shouldUseHistoryForStatisticalFollowUp(message) {
@@ -203,8 +263,26 @@ function shouldUseHistoryForStatisticalFollowUp(message) {
   if (!clean) return false;
   if (/\b(age|aged|male|female|sex|gender|split|breakdown|by|explain|difference|differences|definition|define|meaning|basically|mean|means)\b/.test(clean)) return false;
 
+  return isFollowUpReference(clean);
+}
+
+function isStandaloneQuestion(clean) {
+  return /\b(what|which|where|when|why|how|who|tell me|show me|give me|could you|can you)\b/.test(clean) &&
+    /\b(neet|employment|gdp|wage|wages|population|housing|transport|emissions|productivity|skills|sectors|data|rate|rates|percent|percentage)\b/.test(clean);
+}
+
+function isFollowUpReference(clean) {
   return /^(yes|yeah|yep|that|those|same|also|and for|what about|can you give that|give that|can you do that|do that|is that)\b/.test(clean) ||
-    /\b(as well|that as well|those as well|for that|for them)\b/.test(clean);
+    /\b(as well|that as well|those as well|for that|for them|the same)\b/.test(clean);
+}
+
+function phraseInText(cleanText, cleanPhrase) {
+  if (!cleanText || !cleanPhrase) return false;
+  return new RegExp(`\\b${escapeRegExp(cleanPhrase).replace(/\\s+/g, "\\s+")}\\b`).test(cleanText);
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function buildNeetExplanationAnswer(message, history) {
