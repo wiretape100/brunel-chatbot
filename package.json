@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vercel dev",
     "ingest": "node scripts/ingest-local.js",
+    "test:catalogue": "node scripts/test-datahub-catalogue.js",
     "test:retrieval": "node scripts/test-retrieval-plan.js",
     "test:small-talk": "node scripts/test-small-talk.js"
   },
