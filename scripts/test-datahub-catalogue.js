@@ -2,8 +2,20 @@ import assert from "node:assert/strict";
 import { buildDataHubCatalogueAnswer, detectDataHubCatalogueIntent } from "../lib/datahub-catalogue.js";
 
 function urlsFromAnswer(answer) {
-  return [...String(answer || "").matchAll(/https:\/\/www\.thebrunelcentre\.co\.uk\/data-hub\/[^\s]+/g)]
-    .map((match) => match[0]);
+  return [...String(answer || "").matchAll(/\]\((https:\/\/www\.thebrunelcentre\.co\.uk\/data-hub\/[^\s)]+)\)/g)]
+    .map((match) => normalizeUrl(match[1]));
+}
+
+function markdownLinksFromAnswer(answer) {
+  return [...String(answer || "").matchAll(/\[([^\]]+)\]\((https:\/\/www\.thebrunelcentre\.co\.uk\/data-hub\/[^\s)]+)\)/g)]
+    .map((match) => ({ title: match[1], url: normalizeUrl(match[2]) }));
+}
+
+function normalizeUrl(url) {
+  return String(url || "")
+    .replace(/%28/g, "(")
+    .replace(/%29/g, ")")
+    .replace(/[.,;]+$/, "");
 }
 
 function assertConfirmedSources(result) {
@@ -24,9 +36,12 @@ function assertConfirmedSources(result) {
   assert.ok(result.answer.includes("Here are some"));
   assert.ok(result.answer.includes("This is not the full list"));
   assert.ok(/show more/i.test(result.answer));
-  assert.ok(/narrow/i.test(result.answer));
+  assert.ok(/filter/i.test(result.answer));
   assertConfirmedSources(result);
-  assert.ok(urlsFromAnswer(result.answer).length > 0, "Expected visible source URLs in answer text");
+  assert.equal(result.sources.length, 8, "Expected first catalogue batch to stay concise");
+  assert.ok(!/—\s*https?:\/\//.test(result.answer), "Raw URLs should not be displayed after a dash");
+  assert.ok(!/-\s*https?:\/\//.test(result.answer), "Raw URL-only bullets should not be displayed");
+  assert.ok(markdownLinksFromAnswer(result.answer).length > 0, "Expected clickable Markdown links in answer text");
 }
 
 {

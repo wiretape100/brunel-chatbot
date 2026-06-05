@@ -162,6 +162,13 @@
       font-size: 0.92em;
     }
 
+    .brunel-chat-message a {
+      color: #007f73;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      overflow-wrap: anywhere;
+    }
+
     .brunel-chat-sources {
       margin-top: 8px;
       display: grid;
@@ -475,10 +482,26 @@
   }
 
   function formatInline(text) {
-    return escapeHtml(text)
+    return renderSafeMarkdownLinks(escapeHtml(text))
       .replace(/`([^`]+)`/g, "<code>$1</code>")
       .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
       .replace(/\*([^*\n]+)\*/g, "<em>$1</em>");
+  }
+
+  function renderSafeMarkdownLinks(html) {
+    return String(html || "").replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, function (match, label, href) {
+      if (!isSafeLinkUrl(href)) return match;
+      return '<a href="' + href + '" target="_blank" rel="noopener noreferrer">' + label + "</a>";
+    });
+  }
+
+  function isSafeLinkUrl(value) {
+    try {
+      var parsed = new URL(value.replace(/&amp;/g, "&"));
+      return parsed.protocol === "https:" || parsed.protocol === "http:";
+    } catch (error) {
+      return false;
+    }
   }
 
   function renderSources(messageNode, sources) {
