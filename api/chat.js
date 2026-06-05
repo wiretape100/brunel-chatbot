@@ -26,22 +26,34 @@ const RETRIEVAL_EXPANSIONS = [
   }
 ];
 
+const SMALL_TALK_RESPONSES = {
+  farewell: "Goodbye. You can come back anytime to ask about Brunel Centre research, Data Hub insights or the regional economy.",
+  thanks: "You're welcome. Ask me anytime about Brunel Centre research, Data Hub insights or the regional economy.",
+  greeting: "Hello, I'm the Brunel Centre assistant. I can help with Brunel Centre research, Data Hub insights and the regional economy. Try asking about the Strategic Economic Audit, local wages, sectors, skills, productivity or other regional data.",
+  acknowledgement: "No problem. What would you like to explore next?",
+  unclear: "I can help with Brunel Centre research, Data Hub insights and the regional economy. Try asking something like: \"What does the Strategic Economic Audit say?\" or \"How do wages in the region compare nationally?\""
+};
+
 const SYSTEM_PROMPT = `
 You are Ask the Brunel Centre, a public-friendly economic research assistant.
 Answer only from the Brunel Centre context provided by the system.
 If the context does not contain enough evidence, say that the available Brunel Centre content does not answer the question yet.
+If a requested figure is not available, do not start with "yes". Start directly with what is missing, then say what related evidence is available.
 Use the recent conversation only to understand follow-up references such as "that", "those", "yes", "separate rates", or "is that for Bristol?". Do not introduce a new topic from history unless it is needed to resolve the current question.
 For geography wording, treat "Bath", "B&NES", "BANES", and close misspellings as Bath and North East Somerset. Treat "Glos" as Gloucestershire and "South Glos" as South Gloucestershire. In answers, use the official geography name when possible.
 Use clear language for a general public audience.
 When you use information from the context, cite the source title in the answer.
-For ordinary numerical lookup questions, prefer Brunel Centre article context first. If the exact value is not present there, use analysis dataset rows.
+For ordinary numerical lookup questions, use Brunel Centre article context first. If the exact value is not present there, use the analysis dataset rows fallback.
+The dataset fallback contains analysis-sheet rows unless raw facts are explicitly provided for calculation/count/method questions.
 For ordinary lookup answers, keep the wording natural and cite the public source title. Do not mention raw sheets, source rows, workbook internals, publishers, or methodology unless the user asks for calculation, counts, methods, or detail.
-For specific numerical questions, prefer analysis dataset rows when article context does not include the value. Mention the Data Hub post title, and include the workbook only when helpful.
+For specific numerical questions, use analysis dataset rows only when article context does not include the value. Mention the Data Hub post title, and include the workbook only when helpful.
 Do not conflate different measure labels. In particular, "NEET rate" and "NEET or activity not known rate" are different measures. If the user asks for NEET rate, use NEET-only values. If the available row is "NEET/Not known", name it that way.
 Do not offer extra calculations or follow-up options unless the user asks for them or they are needed to clarify an ambiguity.
 For calculations, follow official-statistics style discipline: do not add, subtract, or average percentages unless the context explicitly says that method is valid.
 For combined rates, use numerator counts divided by denominator counts. If those counts are missing, say the calculation cannot be done from the available content.
 When a verified backend calculation is provided, use that result exactly and explain its method. Do not recalculate or alter it.
+For policy questions, first interpret "policy" as Brunel Centre policy insights, research, or policy-relevant evidence. If the user is asking for a formal government policy launch and the context does not show one, say that clearly.
+For latest or upcoming news questions, use News page or Featured News context when available, and include dates. Do not claim there is no news feed if the context contains homepage Featured News.
 Keep answers concise unless the user asks for detail.
 Do not invent statistics, dates, sources, or policy positions.
 `.trim();
@@ -69,9 +81,26 @@ export default async function handler(req, res) {
       return;
     }
 
+    const smallTalkIntent = classifySmallTalk(message);
+    if (smallTalkIntent) {
+      res.status(200).json({
+        answer: SMALL_TALK_RESPONSES[smallTalkIntent],
+        sources: []
+      });
+      return;
+    }
+
     if (isGreetingOnly(message)) {
       res.status(200).json({
         answer: "Hi — how can I help with Brunel Centre research or data?",
+        sources: []
+      });
+      return;
+    }
+
+    if (isAcknowledgementOnly(message)) {
+      res.status(200).json({
+        answer: "Okay. You can ask about a Data Hub figure, a Brunel Centre research article, policy insights, or recent news.",
         sources: []
       });
       return;
@@ -93,17 +122,19 @@ export default async function handler(req, res) {
       ? formatHistory(history)
       : "Not used because the current question is a new topic.";
 
-    const statisticalContextMessage = shouldUseHistoryForStatisticalFollowUp(message)
-      ? retrievalQuery
-      : message;
-    const statisticalAnswer = await buildStatisticalAnswer({
-      supabase,
-      message,
-      contextMessage: statisticalContextMessage
-    });
-    if (statisticalAnswer) {
-      res.status(200).json(statisticalAnswer);
-      return;
+    if (shouldUseStatisticalBackend(message)) {
+      const statisticalContextMessage = shouldUseHistoryForStatisticalFollowUp(message)
+        ? retrievalQuery
+        : message;
+      const statisticalAnswer = await buildStatisticalAnswer({
+        supabase,
+        message,
+        contextMessage: statisticalContextMessage
+      });
+      if (statisticalAnswer) {
+        res.status(200).json(statisticalAnswer);
+        return;
+      }
     }
 
     const embeddingResponse = await openai.embeddings.create({
@@ -177,9 +208,12 @@ export default async function handler(req, res) {
 
     const answer = completion.choices?.[0]?.message?.content?.trim();
 
+    const allSources = [...sources, ...datasetSources];
+    const visibleSources = filterSourcesForAnswer(answer, allSources);
+
     res.status(200).json({
       answer: answer || "I could not generate an answer. Please try again.",
-      sources: [...sources, ...datasetSources]
+      sources: visibleSources
     });
   } catch (error) {
     sendError(res, 500, "Chat request failed.", error.message);
@@ -239,6 +273,18 @@ function expandRetrievalQuery(message) {
     );
   }
 
+  if (/\b(news|latest|recent|upcoming|announcement|announcements)\b/.test(clean)) {
+    additions.push("The Brunel Centre News Featured News latest news recent news announcements homepage");
+  }
+
+  if (/\b(policy|policies|policy insight|policy insights|launch|released|release)\b/.test(clean)) {
+    additions.push("Brunel Centre policy insights policy-relevant research Strategic Economic Audit consultancy government decision making");
+  }
+
+  if (/\b(datahub|data hub)\b/.test(clean)) {
+    additions.push("Data Hub landing page data sectors topics themes publicly accessible data");
+  }
+
   return additions.length
     ? `${message}\nSearch expansions: ${[...new Set(additions)].join("; ")}`
     : message;
@@ -267,8 +313,8 @@ function shouldUseHistoryForStatisticalFollowUp(message) {
 }
 
 function isStandaloneQuestion(clean) {
-  return /\b(what|which|where|when|why|how|who|tell me|show me|give me|could you|can you)\b/.test(clean) &&
-    /\b(neet|employment|gdp|wage|wages|population|housing|transport|emissions|productivity|skills|sectors|data|rate|rates|percent|percentage)\b/.test(clean);
+  return /\b(what|which|where|when|why|how|who|tell me|show me|give me|could you|can you|do they|does it|does the|is there|are there|i want to know|would love to know)\b/.test(clean) &&
+    /\b(neet|employment|gdp|wage|wages|population|housing|transport|emissions|productivity|skills|sectors|data|datahub|policy|policies|news|latest|recent|research|article|articles|rate|rates|percent|percentage)\b/.test(clean);
 }
 
 function isFollowUpReference(clean) {
@@ -458,6 +504,35 @@ function dedupeDatasetSources(summaries, rows, facts) {
   return sources;
 }
 
+function filterSourcesForAnswer(answer, allSources) {
+  const sources = allSources || [];
+  if (!sources.length) return [];
+
+  const cleanAnswer = normalizePlainText(answer);
+  if (!cleanAnswer) return sources.slice(0, 2);
+
+  const matched = [];
+  const seen = new Set();
+
+  for (const source of sources) {
+    const title = normalizePlainText(source.title);
+    if (!title) continue;
+
+    const titleTokens = title.split(" ").filter((token) => token.length > 3);
+    const tokenMatches = titleTokens.filter((token) => cleanAnswer.includes(token)).length;
+    const enoughTokenMatches = titleTokens.length > 0 && tokenMatches >= Math.min(3, titleTokens.length);
+
+    if (!cleanAnswer.includes(title) && !enoughTokenMatches) continue;
+
+    const key = source.url || source.title;
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    matched.push(source);
+  }
+
+  return matched.length ? matched : sources.slice(0, 2);
+}
+
 function formatFactValue(fact) {
   const rawValue = fact.value !== null && fact.value !== undefined ? Number(fact.value) : null;
 
@@ -483,6 +558,65 @@ function shouldIncludeRawFacts(message) {
   return /\b(calculate|calculation|compute|combined|combine|weighted|average|aggregate|cohort|count|counts|numerator|denominator|method|raw|detail|details)\b/i.test(message);
 }
 
+function shouldUseStatisticalBackend(message) {
+  return /\b(calculate|calculation|compute|computed|combined|combine|weighted|average|aggregate|aggregated|cohort|count|counts|numerator|denominator|method|raw)\b/i.test(message);
+}
+
+function classifySmallTalk(message) {
+  const raw = String(message || "").trim();
+  const clean = normalizeSmallTalk(raw);
+  if (!clean) return isUnclearShortInput(clean, raw) ? "unclear" : null;
+  if (isLikelyRealQuestion(clean)) return null;
+
+  if (isFarewell(clean)) return "farewell";
+  if (isThanks(clean)) return "thanks";
+  if (isGreeting(clean, raw)) return "greeting";
+  if (isAcknowledgement(clean)) return "acknowledgement";
+  if (isUnclearShortInput(clean, raw)) return "unclear";
+  return null;
+}
+
+function normalizeSmallTalk(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function isLikelyRealQuestion(clean) {
+  if (clean.split(" ").length <= 3) return false;
+
+  return /\b(what|which|where|when|why|how|who|tell|show|give|explain|summarise|summarize|compare|rate|rates|data|research|article|hub|wage|wages|employment|neet|gdp|emissions|productivity|skills|sectors|housing|transport|policy|news|economy|economic|regional)\b/.test(clean);
+}
+
+function isFarewell(clean) {
+  return /^(bye|goodbye|see you|see ya|talk later|thanks bye|thank you bye|ok bye|okay bye)$/.test(clean);
+}
+
+function isThanks(clean) {
+  return /^(thanks|thank you|thankyou|cheers|many thanks|thanks a lot|thank you very much)$/.test(clean);
+}
+
+function isGreeting(clean, raw) {
+  if (/[?]{2,}/.test(raw)) return false;
+  return /^(hi|hii|hello|hey|hiya|helo|heelo|good morning|good afternoon|good evening)$/.test(clean);
+}
+
+function isAcknowledgement(clean) {
+  return /^(ok|okay|cool|fine|great|alright|all right|sounds good|got it|understood|no problem)$/.test(clean);
+}
+
+function isUnclearShortInput(clean, raw) {
+  const compactRaw = raw.replace(/\s+/g, "");
+  if (/^[?.!]+$/.test(compactRaw)) return true;
+  if (/^\.+$/.test(compactRaw)) return true;
+  if (/[?]{2,}/.test(raw) && clean.split(" ").length <= 2) return true;
+  if (/^(help|what|huh|eh|erm|um|random)$/.test(clean)) return true;
+
+  return clean.length <= 2;
+}
+
 function isGreetingOnly(message) {
   const clean = String(message || "")
     .toLowerCase()
@@ -491,4 +625,14 @@ function isGreetingOnly(message) {
     .trim();
 
   return /^(hi|hello|hey|hiya|good morning|good afternoon|good evening|thanks|thank you)$/.test(clean);
+}
+
+function isAcknowledgementOnly(message) {
+  const clean = String(message || "")
+    .toLowerCase()
+    .replace(/[^a-z\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return /^(ok|okay|alright|all right|fine|great|cool|got it|understood|no problem|sounds good)$/.test(clean);
 }

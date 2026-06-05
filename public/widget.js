@@ -7,7 +7,7 @@
   var userConfig = window.BRUNEL_CHATBOT_CONFIG || {};
   var config = {
     apiUrl: userConfig.apiUrl || baseUrl + "/api/chat",
-    title: userConfig.title || "Ask Brunel",
+    title: userConfig.title || "Ask Brunel Centre",
     accent: userConfig.accent || "#007f73"
   };
 
@@ -38,8 +38,9 @@
     .brunel-chat-button:focus-visible,
     .brunel-chat-send:focus-visible,
     .brunel-chat-close:focus-visible,
+    .brunel-chat-input:focus-visible,
     .brunel-chat-suggestion:focus-visible {
-      outline: 3px solid rgba(0, 127, 115, 0.35);
+      outline: 3px solid rgba(7, 59, 76, 0.35);
       outline-offset: 2px;
     }
 
@@ -83,7 +84,7 @@
       margin-top: 2px;
       font-size: 12px;
       line-height: 1.3;
-      color: rgba(255, 255, 255, 0.78);
+      color: rgba(255, 255, 255, 0.86);
     }
 
     .brunel-chat-close {
@@ -180,6 +181,14 @@
       margin: 0 0 14px;
     }
 
+    .brunel-chat-suggestions-label {
+      margin: 2px 0 2px;
+      color: #405866;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
     .brunel-chat-suggestion {
       width: 100%;
       border: 1px solid #d7e1e4;
@@ -192,6 +201,11 @@
       font-size: 13px;
       line-height: 1.35;
       cursor: pointer;
+    }
+
+    .brunel-chat-suggestion:hover {
+      border-color: #b9c9ce;
+      background: #fdfefe;
     }
 
     .brunel-chat-form {
@@ -214,16 +228,26 @@
       color: #102a36;
     }
 
+    .brunel-chat-input::placeholder {
+      color: #697b85;
+      opacity: 1;
+    }
+
     .brunel-chat-send {
       width: 44px;
       height: 44px;
       border: 0;
       border-radius: 8px;
-      background: #007f73;
+      background: #073b4c;
       color: #ffffff;
       cursor: pointer;
       display: grid;
       place-items: center;
+      box-shadow: 0 8px 18px rgba(7, 59, 76, 0.18);
+    }
+
+    .brunel-chat-send:hover:not(:disabled) {
+      background: #0a4a5f;
     }
 
     .brunel-chat-send:disabled {
@@ -251,11 +275,11 @@
   var root = document.createElement("div");
   root.className = "brunel-chat-root";
   root.innerHTML = `
-    <section class="brunel-chat-panel" aria-live="polite" aria-label="Ask Brunel chat">
+    <section class="brunel-chat-panel" aria-live="polite" aria-label="Ask Brunel Centre chat">
       <header class="brunel-chat-header">
         <div>
           <div class="brunel-chat-title">${escapeHtml(config.title)}</div>
-          <div class="brunel-chat-subtitle">West of England research and data</div>
+          <div class="brunel-chat-subtitle">Research, data and insight for the region</div>
         </div>
         <button class="brunel-chat-close" type="button" aria-label="Close chat">
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -263,7 +287,7 @@
       </header>
       <div class="brunel-chat-messages"></div>
       <form class="brunel-chat-form">
-        <input class="brunel-chat-input" autocomplete="off" placeholder="Ask a question" />
+        <input class="brunel-chat-input" autocomplete="off" aria-label="Ask about research, data or the regional economy" placeholder="Ask about research, data or the regional economy" />
         <button class="brunel-chat-send" type="submit" aria-label="Send message">
           <svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M22 2 11 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
@@ -311,14 +335,18 @@
   });
 
   function showStarter() {
-    appendMessage("bot", "Ask me about Brunel Centre research, data, and the West of England economy.");
+    appendMessage("bot", "Ask me about Brunel Centre research, Data Hub insights and the regional economy.");
 
     var suggestions = document.createElement("div");
     suggestions.className = "brunel-chat-suggestions";
+    var label = document.createElement("div");
+    label.className = "brunel-chat-suggestions-label";
+    label.textContent = "Try asking";
+    suggestions.appendChild(label);
     [
       "What does the Strategic Economic Audit say?",
-      "How do wages in the West of England compare nationally?",
-      "What sectors make the region distinctive?"
+      "What Data Hub insights are available for the Greater West of England?",
+      "How do wages in the region compare nationally?"
     ].forEach(function (question) {
       var item = document.createElement("button");
       item.className = "brunel-chat-suggestion";
