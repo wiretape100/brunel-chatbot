@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vercel dev",
     "ingest": "node scripts/ingest-local.js",
-    "test:retrieval": "node scripts/test-retrieval-plan.js"
+    "test:retrieval": "node scripts/test-retrieval-plan.js",
+    "test:small-talk": "node scripts/test-small-talk.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",

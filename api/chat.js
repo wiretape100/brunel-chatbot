@@ -1,7 +1,7 @@
 import { createOpenAIClient, createSupabaseClient } from "../lib/clients.js";
 import { getServerConfig } from "../lib/config.js";
 import { applyCors, readJsonBody, sendError } from "../lib/http.js";
-import { buildRetrievalPlan, describeRetrievalPlan, mergeSearchResults } from "../lib/retrieval.js";
+import { buildRetrievalPlan, conceptLabel, describeRetrievalPlan, mergeSearchResults, sourceMatchesConcept } from "../lib/retrieval.js";
 import { buildStatisticalAnswer } from "../lib/statistics.js";
 
 const RETRIEVAL_EXPANSIONS = [
@@ -31,7 +31,7 @@ const SMALL_TALK_RESPONSES = {
   farewell: "Goodbye. You can come back anytime to explore Brunel Centre research and Data Hub insights.",
   thanks: "You're welcome. Let me know if you'd like to explore anything else.",
   greeting: "Hello, I'm the Brunel Centre assistant. I can help with Brunel Centre research, Data Hub insights and the regional economy. What would you like to explore?",
-  acknowledgement: "No problem. What would you like to look at next?",
+  acknowledgement: "Glad that helped. What would you like to explore next?",
   unclear: "I can help with Brunel Centre research, Data Hub insights and the regional economy. Please ask a question about a topic, place or dataset you'd like to explore."
 };
 
@@ -55,7 +55,11 @@ For combined rates, use numerator counts divided by denominator counts. If those
 When a verified backend calculation is provided, use that result exactly and explain its method. Do not recalculate or alter it.
 For policy questions, first interpret "policy" as Brunel Centre policy insights, research, or policy-relevant evidence. If the user is asking for a formal government policy launch and the context does not show one, say that clearly.
 For latest or upcoming news questions, use News page or Featured News context when available, and include dates. Do not claim there is no news feed if the context contains homepage Featured News.
-For multi-topic questions, cover each requested topic that has retrieved evidence. If one part is not found, say "I found sources for [X], but I did not find a directly relevant Brunel Centre source for [Y] in the retrieved results." Do not turn a retrieval miss into a claim that Brunel Centre has no content on that topic.
+For multi-topic questions, count the requested topics correctly. Say "all three topics", "two of the three topics", "one of the three topics", or similar based on the confirmed topic-source map. Do not say "both topics" unless the user asked about exactly two topics.
+For multi-topic questions, cover each requested topic under its own heading. Use the confirmed topic-source map first. Only list a source title as confirmed if it has a URL/source record in that map.
+If a topic has only a possible unlinked match, say: "I found a possible matching title in the retrieved results, but I do not have a source link for it."
+If one part is not found, say "I found sources for [X], but I did not find a directly relevant Brunel Centre source for [Y] in the retrieved results." Do not turn a retrieval miss into a claim that Brunel Centre has no content on that topic.
+Do not use vague source wording such as "Source titles: the Brunel Centre data hub posts above."
 Keep answers concise unless the user asks for detail.
 Do not invent statistics, dates, sources, or policy positions.
 `.trim();
@@ -215,6 +219,12 @@ export default async function handler(req, res) {
 
     const context = formatContext(matches);
     const datasetContext = formatDatasetContext(datasetSummaries, datasetRows, datasetFacts, includeRawFacts);
+    const topicSourceContext = formatTopicSourceContext(retrievalPlan, [
+      ...(matches || []),
+      ...(datasetSummaries || []),
+      ...(datasetRows || []),
+      ...(datasetFacts || [])
+    ]);
     const completion = await openai.chat.completions.create({
       model: config.chatModel,
       temperature: 0.2,
@@ -230,6 +240,9 @@ export default async function handler(req, res) {
             "",
             "Retrieval strategy:",
             describeRetrievalPlan(retrievalPlan) || "Standard single-topic retrieval was used.",
+            "",
+            "Confirmed topic-source map:",
+            topicSourceContext || "Not applicable.",
             "",
             "Brunel Centre article context:",
             context || "No article context found.",
@@ -515,6 +528,106 @@ function formatDatasetContext(summaries, rows, facts, includeRawFacts) {
   return parts.join("\n\n");
 }
 
+function formatTopicSourceContext(retrievalPlan, items) {
+  if (!retrievalPlan?.isMultiConcept || !retrievalPlan.concepts?.length) return "";
+
+  const topicSections = [];
+  const foundTopics = [];
+  const missingTopics = [];
+
+  for (const concept of retrievalPlan.concepts) {
+    const label = conceptLabel(concept);
+    const matches = (items || []).filter((item) => sourceMatchesConcept(item, concept));
+    const confirmed = dedupeTopicSources(matches.filter((item) => getSourceUrl(item)));
+    const possible = dedupeTopicSources(matches.filter((item) => !getSourceUrl(item)));
+
+    if (confirmed.length) {
+      foundTopics.push(label);
+    } else {
+      missingTopics.push(label);
+    }
+
+    const lines = [`${label}:`];
+
+    if (confirmed.length) {
+      lines.push("Confirmed linked sources:");
+      confirmed.slice(0, 3).forEach((source) => {
+        lines.push(`- ${source.title} | ${source.url}`);
+      });
+    }
+
+    if (possible.length) {
+      lines.push("Possible unlinked matches:");
+      possible.slice(0, 2).forEach((source) => {
+        lines.push(`- ${source.title}`);
+      });
+    }
+
+    if (!confirmed.length && !possible.length) {
+      lines.push("- No directly relevant source was found in the retrieved results.");
+    }
+
+    topicSections.push(lines.join("\n"));
+  }
+
+  const total = retrievalPlan.concepts.length;
+  const found = foundTopics.length;
+
+  return [
+    `Requested topic count: ${total}.`,
+    `Confirmed linked topic count: ${found}.`,
+    `Coverage phrase to use: ${coveragePhrase(found, total)}.`,
+    foundTopics.length ? `Topics with confirmed linked sources: ${foundTopics.join(", ")}.` : "Topics with confirmed linked sources: none.",
+    missingTopics.length ? `Topics without confirmed linked sources: ${missingTopics.join(", ")}.` : "Topics without confirmed linked sources: none.",
+    "Use the topic headings below. Do not list a source as confirmed unless it appears under Confirmed linked sources with a URL.",
+    "",
+    ...topicSections
+  ].join("\n");
+}
+
+function dedupeTopicSources(items) {
+  const seen = new Set();
+  const sources = [];
+
+  for (const item of items || []) {
+    const title = getSourceTitle(item);
+    const url = getSourceUrl(item);
+    const key = url || title;
+    if (!title || !key || seen.has(key)) continue;
+    seen.add(key);
+    sources.push({ title, url });
+  }
+
+  return sources;
+}
+
+function getSourceTitle(item) {
+  return item?.title || item?.post_title || item?.workbook_name || "";
+}
+
+function getSourceUrl(item) {
+  return item?.url || item?.post_url || "";
+}
+
+function coveragePhrase(found, total) {
+  if (found === total) return `all ${numberWord(total)} topics`;
+  if (found === 0) return `none of the ${numberWord(total)} topics`;
+  return `${numberWord(found)} of the ${numberWord(total)} topics`;
+}
+
+function numberWord(value) {
+  const words = {
+    1: "one",
+    2: "two",
+    3: "three",
+    4: "four",
+    5: "five",
+    6: "six"
+  };
+
+  return words[value] || String(value);
+}
+
 function dedupeSources(matches) {
   const seen = new Set();
   const sources = [];
@@ -554,7 +667,7 @@ function dedupeDatasetSources(summaries, rows, facts) {
 }
 
 function filterSourcesForAnswer(answer, allSources) {
-  const sources = allSources || [];
+  const sources = (allSources || []).filter((source) => source?.url);
   if (!sources.length) return [];
 
   const cleanAnswer = normalizePlainText(answer);
@@ -619,8 +732,8 @@ function classifySmallTalk(message) {
 
   if (isFarewell(clean)) return "farewell";
   if (isThanks(clean)) return "thanks";
-  if (isGreeting(clean, raw)) return "greeting";
   if (isAcknowledgement(clean)) return "acknowledgement";
+  if (isGreeting(clean, raw)) return "greeting";
   if (isUnclearShortInput(clean, raw)) return "unclear";
   return null;
 }
@@ -628,6 +741,8 @@ function classifySmallTalk(message) {
 function normalizeSmallTalk(value) {
   return String(value || "")
     .toLowerCase()
+    .replace(/[’‘`´]/g, "'")
+    .replace(/'/g, "")
     .replace(/[^\p{L}\p{N}\s]/gu, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -636,7 +751,7 @@ function normalizeSmallTalk(value) {
 function isLikelyRealQuestion(clean) {
   if (clean.split(" ").length <= 3) return false;
 
-  return /\b(what|which|where|when|why|how|who|tell|show|give|explain|summarise|summarize|compare|rate|rates|data|research|article|hub|wage|wages|employment|neet|gdp|emissions|productivity|skills|sectors|housing|transport|policy|news|economy|economic|regional)\b/.test(clean);
+  return /\b(what|which|where|when|why|how|who|can|could|would|tell|show|give|explain|summarise|summarize|compare|list|find|get|provide|source|sources|breakdown|rate|rates|data|research|article|hub|wage|wages|employment|neet|gdp|emissions|productivity|skills|sectors|housing|transport|policy|news|economy|economic|regional)\b/.test(clean);
 }
 
 function isFarewell(clean) {
@@ -653,7 +768,7 @@ function isGreeting(clean, raw) {
 }
 
 function isAcknowledgement(clean) {
-  return /^(ok|okay|cool|fine|great|alright|all right|sounds good|got it|understood|no problem)$/.test(clean);
+  return /^(ok|okay|cool|fine|great|thats great|that is great|brilliant|perfect|nice|nice one|good|good to know|sounds good|got it|understood|makes sense|thats helpful|that is helpful|very helpful|helpful|excellent|amazing|alright|all right|no problem|great thanks|thats great thanks|that is great thanks|perfect thanks|brilliant thanks|thanks thats helpful|thanks that is helpful|okay thanks|ok thanks|cool thanks)$/.test(clean);
 }
 
 function isUnclearShortInput(clean, raw) {

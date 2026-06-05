@@ -81,4 +81,12 @@ function assertIncludesAll(value, terms) {
   assertIncludesAll(queryText(plan), ["sector", "productivity"]);
 }
 
+{
+  const plan = planFor("Do you have data on NEET rates, housing and skills?");
+  assert.equal(plan.isMultiConcept, true);
+  assert.deepEqual(plan.concepts, ["skills", "neet", "housing"]);
+  assert.equal(plan.concepts.length, 3);
+  assertIncludesAll(queryText(plan), ["neet", "housing", "skills"]);
+}
+
 console.log("Retrieval plan tests passed.");
