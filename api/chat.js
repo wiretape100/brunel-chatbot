@@ -27,11 +27,11 @@ const RETRIEVAL_EXPANSIONS = [
 ];
 
 const SMALL_TALK_RESPONSES = {
-  farewell: "Goodbye. You can come back anytime to ask about Brunel Centre research, Data Hub insights or the regional economy.",
-  thanks: "You're welcome. Ask me anytime about Brunel Centre research, Data Hub insights or the regional economy.",
-  greeting: "Hello, I'm the Brunel Centre assistant. I can help with Brunel Centre research, Data Hub insights and the regional economy. Try asking about the Strategic Economic Audit, local wages, sectors, skills, productivity or other regional data.",
-  acknowledgement: "No problem. What would you like to explore next?",
-  unclear: "I can help with Brunel Centre research, Data Hub insights and the regional economy. Try asking something like: \"What does the Strategic Economic Audit say?\" or \"How do wages in the region compare nationally?\""
+  farewell: "Goodbye. You can come back anytime to explore Brunel Centre research and Data Hub insights.",
+  thanks: "You're welcome. Let me know if you'd like to explore anything else.",
+  greeting: "Hello, I'm the Brunel Centre assistant. I can help with Brunel Centre research, Data Hub insights and the regional economy. What would you like to explore?",
+  acknowledgement: "No problem. What would you like to look at next?",
+  unclear: "I can help with Brunel Centre research, Data Hub insights and the regional economy. Please ask a question about a topic, place or dataset you'd like to explore."
 };
 
 const SYSTEM_PROMPT = `

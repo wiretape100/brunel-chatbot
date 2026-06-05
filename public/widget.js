@@ -287,7 +287,7 @@
       </header>
       <div class="brunel-chat-messages"></div>
       <form class="brunel-chat-form">
-        <input class="brunel-chat-input" autocomplete="off" aria-label="Ask about research, data or the regional economy" placeholder="Ask about research, data or the regional economy" />
+        <input class="brunel-chat-input" autocomplete="off" aria-label="Ask about the region" placeholder="Ask about the region" />
         <button class="brunel-chat-send" type="submit" aria-label="Send message">
           <svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M22 2 11 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
