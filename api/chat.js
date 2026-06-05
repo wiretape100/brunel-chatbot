@@ -1,6 +1,7 @@
 import { createOpenAIClient, createSupabaseClient } from "../lib/clients.js";
 import { getServerConfig } from "../lib/config.js";
 import { applyCors, readJsonBody, sendError } from "../lib/http.js";
+import { buildRetrievalPlan, describeRetrievalPlan, mergeSearchResults } from "../lib/retrieval.js";
 import { buildStatisticalAnswer } from "../lib/statistics.js";
 
 const RETRIEVAL_EXPANSIONS = [
@@ -54,6 +55,7 @@ For combined rates, use numerator counts divided by denominator counts. If those
 When a verified backend calculation is provided, use that result exactly and explain its method. Do not recalculate or alter it.
 For policy questions, first interpret "policy" as Brunel Centre policy insights, research, or policy-relevant evidence. If the user is asking for a formal government policy launch and the context does not show one, say that clearly.
 For latest or upcoming news questions, use News page or Featured News context when available, and include dates. Do not claim there is no news feed if the context contains homepage Featured News.
+For multi-topic questions, cover each requested topic that has retrieved evidence. If one part is not found, say "I found sources for [X], but I did not find a directly relevant Brunel Centre source for [Y] in the retrieved results." Do not turn a retrieval miss into a claim that Brunel Centre has no content on that topic.
 Keep answers concise unless the user asks for detail.
 Do not invent statistics, dates, sources, or policy positions.
 `.trim();
@@ -118,6 +120,7 @@ export default async function handler(req, res) {
     const includeRawFacts = shouldIncludeRawFacts(message);
     const useHistoryForRetrieval = shouldUseHistoryForRetrieval(message);
     const retrievalQuery = buildRetrievalQuery(message, history);
+    const retrievalPlan = buildRetrievalPlan({ message, primaryQuery: retrievalQuery });
     const promptHistory = useHistoryForRetrieval
       ? formatHistory(history)
       : "Not used because the current question is a new topic.";
@@ -139,43 +142,72 @@ export default async function handler(req, res) {
 
     const embeddingResponse = await openai.embeddings.create({
       model: config.embeddingModel,
-      input: retrievalQuery
+      input: retrievalPlan.embeddingQueries
     });
 
-    const queryEmbedding = embeddingResponse.data[0].embedding;
+    const queryEmbeddings = embeddingResponse.data.map((item) => item.embedding);
     const [
-      { data: matches, error: matchError },
-      datasetSummaries,
-      datasetRows,
-      datasetFacts
+      documentGroups,
+      datasetSummaryGroups,
+      datasetRowGroups,
+      datasetFactGroups
     ] = await Promise.all([
-      supabase.rpc("match_brunel_documents", {
-        query_embedding: queryEmbedding,
-        match_count: 5
-      }),
-      safeRpc(supabase, "match_brunel_dataset_summaries", {
-        query_embedding: queryEmbedding,
-        match_count: 4
-      }),
-      safeRpc(supabase, "search_brunel_dataset_rows", {
-        query_text: retrievalQuery,
-        match_count: 8
-      }),
-      includeRawFacts ? safeRpc(supabase, "search_brunel_dataset_facts", {
-        query_text: retrievalQuery,
-        match_count: 12
-      }) : Promise.resolve([])
+      Promise.all(queryEmbeddings.map((queryEmbedding, index) =>
+        requiredRpc(supabase, "match_brunel_documents", {
+          query_embedding: queryEmbedding,
+          match_count: retrievalPlan.isMultiConcept ? 6 : 5
+        }).then((rows) => tagRetrievedRows(rows, retrievalPlan.embeddingQueries[index], index))
+      )),
+      Promise.all(queryEmbeddings.map((queryEmbedding, index) =>
+        safeRpc(supabase, "match_brunel_dataset_summaries", {
+          query_embedding: queryEmbedding,
+          match_count: retrievalPlan.isMultiConcept ? 6 : 4
+        }).then((rows) => tagRetrievedRows(rows, retrievalPlan.embeddingQueries[index], index))
+      )),
+      Promise.all(retrievalPlan.searchQueries.map((queryText, index) =>
+        safeRpc(supabase, "search_brunel_dataset_rows", {
+          query_text: queryText,
+          match_count: retrievalPlan.isMultiConcept ? 8 : 8
+        }).then((rows) => tagRetrievedRows(rows, queryText, index))
+      )),
+      includeRawFacts ? Promise.all(retrievalPlan.searchQueries.map((queryText, index) =>
+        safeRpc(supabase, "search_brunel_dataset_facts", {
+          query_text: queryText,
+          match_count: retrievalPlan.isMultiConcept ? 12 : 12
+        }).then((rows) => tagRetrievedRows(rows, queryText, index))
+      )) : Promise.resolve([])
     ]);
 
-    if (matchError) throw matchError;
+    const matches = mergeSearchResults(documentGroups, {
+      concepts: retrievalPlan.concepts,
+      query: message,
+      limit: retrievalPlan.isMultiConcept ? 10 : 5
+    });
+    const datasetSummaries = mergeSearchResults(datasetSummaryGroups, {
+      concepts: retrievalPlan.concepts,
+      query: message,
+      limit: retrievalPlan.isMultiConcept ? 8 : 4
+    });
+    const datasetRows = mergeSearchResults(datasetRowGroups, {
+      concepts: retrievalPlan.concepts,
+      query: message,
+      limit: retrievalPlan.isMultiConcept ? 12 : 8
+    });
+    const datasetFacts = mergeSearchResults(datasetFactGroups, {
+      concepts: retrievalPlan.concepts,
+      query: message,
+      limit: retrievalPlan.isMultiConcept ? 16 : 12
+    });
 
     const sources = dedupeSources(matches || []);
     const datasetSources = dedupeDatasetSources(datasetSummaries, datasetRows, datasetFacts);
 
     if (!sources.length && !datasetSummaries.length && !datasetRows.length && !datasetFacts.length) {
+      const fallbackAnswer = retrievalPlan.isMultiConcept
+        ? "I did not find directly relevant Brunel Centre sources in the retrieved results for those topics. Try asking about one topic at a time, or include the specific place, year, or dataset you want to explore."
+        : "I do not have enough Brunel Centre content loaded to answer that yet. Try asking about the Strategic Economic Audit, wages, employment rates, GDP, or what the Brunel Centre does.";
       res.status(200).json({
-        answer:
-          "I do not have enough Brunel Centre content loaded to answer that yet. Try asking about the Strategic Economic Audit, wages, employment rates, GDP, or what the Brunel Centre does.",
+        answer: fallbackAnswer,
         sources: []
       });
       return;
@@ -195,6 +227,9 @@ export default async function handler(req, res) {
             "",
             "Recent conversation:",
             promptHistory || "No recent conversation.",
+            "",
+            "Retrieval strategy:",
+            describeRetrievalPlan(retrievalPlan) || "Standard single-topic retrieval was used.",
             "",
             "Brunel Centre article context:",
             context || "No article context found.",
@@ -224,6 +259,20 @@ async function safeRpc(supabase, name, params) {
   const { data, error } = await supabase.rpc(name, params);
   if (error) return [];
   return data || [];
+}
+
+async function requiredRpc(supabase, name, params) {
+  const { data, error } = await supabase.rpc(name, params);
+  if (error) throw error;
+  return data || [];
+}
+
+function tagRetrievedRows(rows, query, queryIndex) {
+  return (rows || []).map((row) => ({
+    ...row,
+    retrieval_query: query,
+    retrieval_query_index: queryIndex
+  }));
 }
 
 function sanitizeHistory(history) {
