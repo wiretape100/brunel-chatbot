@@ -8,6 +8,7 @@
     "ingest": "node scripts/ingest-local.js",
     "validate:sources": "node scripts/validate-sources.js",
     "test:catalogue": "node scripts/test-datahub-catalogue.js",
+    "test:counts": "node scripts/test-count-followups.js",
     "test:hardening": "node scripts/test-production-hardening.js",
     "test:retrieval": "node scripts/test-retrieval-plan.js",
     "test:small-talk": "node scripts/test-small-talk.js"

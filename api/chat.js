@@ -374,6 +374,7 @@ function shouldUseHistoryForRetrieval(message) {
   const clean = normalizePlainText(message);
   if (!clean) return false;
 
+  if (isCountDetailFollowUp(clean)) return true;
   if (isStandaloneQuestion(clean)) return false;
 
   return isFollowUpReference(clean);
@@ -389,7 +390,7 @@ function shouldUseHistoryForStatisticalFollowUp(message) {
   if (!clean) return false;
   if (/\b(age|aged|male|female|sex|gender|split|breakdown|by|explain|difference|differences|definition|define|meaning|basically|mean|means)\b/.test(clean)) return false;
 
-  return isFollowUpReference(clean);
+  return isCountDetailFollowUp(clean) || isFollowUpReference(clean);
 }
 
 function isStandaloneQuestion(clean) {
@@ -400,6 +401,14 @@ function isStandaloneQuestion(clean) {
 function isFollowUpReference(clean) {
   return /^(yes|yeah|yep|that|those|same|also|and for|what about|can you give that|give that|can you do that|do that|is that)\b/.test(clean) ||
     /\b(as well|that as well|those as well|for that|for them|the same)\b/.test(clean);
+}
+
+function isCountDetailFollowUp(clean) {
+  const hasCountLanguage = /\b(count|counts|number|numbers|how many|total|total number|numerator|denominator|base|sample size|people employed|employed people|employment count|count of employment|counts of employment|workforce count|cohort|raw|detail|details)\b/.test(clean);
+  if (!hasCountLanguage) return false;
+
+  const hasStandaloneTopic = /\b(neet|employment|employed|workforce|gdp|gva|population|housing|transport|emissions|productivity|skills|wages|research|data hub)\b/.test(clean);
+  return !hasStandaloneTopic || /\b(employment|employed|workforce)\b/.test(clean);
 }
 
 function phraseInText(cleanText, cleanPhrase) {
@@ -735,11 +744,11 @@ function formatSummaryContent(content, includeRawFacts) {
 }
 
 function shouldIncludeRawFacts(message) {
-  return /\b(calculate|calculation|compute|combined|combine|weighted|average|aggregate|cohort|count|counts|numerator|denominator|method|raw|detail|details)\b/i.test(message);
+  return /\b(calculate|calculation|compute|combined|combine|weighted|average|aggregate|cohort|count|counts|number|numbers|how many|total|total number|numerator|denominator|base|sample size|people employed|employed people|employment count|count of employment|counts of employment|workforce count|method|raw|detail|details)\b/i.test(message);
 }
 
 function shouldUseStatisticalBackend(message) {
-  return /\b(calculate|calculation|compute|computed|combined|combine|weighted|average|aggregate|aggregated|cohort|count|counts|numerator|denominator|method|raw)\b/i.test(message);
+  return /\b(calculate|calculation|compute|computed|combined|combine|weighted|average|aggregate|aggregated|cohort|count|counts|number|numbers|how many|total|total number|numerator|denominator|base|sample size|people employed|employed people|employment count|count of employment|counts of employment|workforce count|method|raw)\b/i.test(message);
 }
 
 function classifySmallTalk(message) {
