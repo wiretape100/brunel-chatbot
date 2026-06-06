@@ -144,8 +144,51 @@ function assertCataloguePresentation(result) {
 }
 
 {
+  const result = await buildCatalogueAnswer({
+    message: "show more",
+    history: [
+      {
+        role: "assistant",
+        content: "Hello, I'm the Brunel Centre assistant. I can help with Brunel Centre research, Data Hub insights and the regional economy. What would you like to explore?"
+      }
+    ]
+  });
+  assert.ok(/What would you like me to show more of/.test(result.answer));
+  assert.ok(!/Here are more Brunel Centre research articles/i.test(result.answer));
+}
+
+{
+  const catalogue = await buildCatalogueAnswer({
+    message: "Could you list the research articles in the Centre?",
+    history: []
+  });
+  const acknowledgementThenMore = await buildCatalogueAnswer({
+    message: "show more",
+    history: [
+      { role: "assistant", content: catalogue.answer },
+      { role: "user", content: "that's great" },
+      { role: "assistant", content: "Glad that helped. What would you like to explore next?" }
+    ]
+  });
+  assert.ok(/What would you like me to show more of/.test(acknowledgementThenMore.answer));
+  assert.ok(!/Here are more Brunel Centre research articles/i.test(acknowledgementThenMore.answer));
+}
+
+{
   const result = await buildCatalogueAnswer({ message: "Show more Data Hub posts", history: [] });
   assert.ok(result.answer.includes("Here are some Data Hub insights I found"));
+  assertCataloguePresentation(result);
+}
+
+{
+  const result = await buildCatalogueAnswer({ message: "Show more Data Hub insights", history: [] });
+  assert.ok(result.answer.includes("Here are some Data Hub insights I found"));
+  assertCataloguePresentation(result);
+}
+
+{
+  const result = await buildCatalogueAnswer({ message: "Show more research articles", history: [] });
+  assert.ok(result.answer.includes("Here are some Brunel Centre research articles I found"));
   assertCataloguePresentation(result);
 }
 
