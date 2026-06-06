@@ -69,6 +69,29 @@ https://YOUR-VERCEL-APP.vercel.app/api/ingest?secret=YOUR_INGEST_SECRET&offset=8
 
 Each response includes `has_more` and `next_offset`. Continue until `has_more` is `false`.
 
+## Refresh or Add Sources
+
+The chatbot does not need prompt changes when new Brunel Centre Data Hub or Research posts are added. Add or refresh the source registry, validate it, then rerun ingestion.
+
+1. Add the new public page to `content/sources.json`.
+   - Data Hub posts should use a `data-hub-...` id, a `https://www.thebrunelcentre.co.uk/data-hub/...` URL, and include the `data-hub` tag.
+   - Research articles should use a `research-...` id, a `https://www.thebrunelcentre.co.uk/research/...` URL, and include the `research` tag.
+   - Generic pages such as About, Consultancy, Contact, Privacy, Terms, Accessibility and Governance can stay in the registry for grounded Q&A, but should not be tagged or treated as catalogue article results.
+2. If the new Data Hub post has linked workbook data, add or update its mapping in `content/datahub-datasets.json`.
+3. Run the source validation command locally:
+
+```sh
+npm run validate:sources
+```
+
+This checks that source URLs are valid, tags are arrays, source types can be inferred, Data Hub and Research posts are classified correctly, generic pages are excluded from article catalogues, and dataset mappings match source URLs after normalisation. URL matching tolerates encoded parentheses, normal parentheses, en dashes, hyphens, smart punctuation, trailing slashes, case differences and minor URL encoding differences.
+
+4. Deploy the updated registry to Vercel.
+5. Rerun `/api/ingest` in batches to refresh article chunks and embeddings.
+6. If datasets changed, rerun `/api/ingest-datasets` in batches.
+
+The current repo uses a static source registry. For production, replace or supplement `content/sources.json` with a Framer CMS or sitemap sync that writes the same source shape and then runs the validation and ingestion steps above.
+
 ## Test the Widget
 
 Open:
@@ -117,6 +140,20 @@ Calculate the population-weighted NEET rate for Bristol and Gloucestershire.
 ```
 
 For rate calculations, the backend uses numerator and denominator counts from raw sheets where available. It will not average percentages or estimate missing counts.
+
+## Production Hardening Checks
+
+Run the focused checks before deploying source or retrieval changes:
+
+```sh
+npm run validate:sources
+npm run test:small-talk
+npm run test:catalogue
+npm run test:retrieval
+npm run test:hardening
+```
+
+The chatbot API includes a lightweight per-IP in-memory rate limit for normal abuse protection. If the limit is exceeded, the API returns a polite chatbot message rather than internal details. For high-traffic production, use a shared store such as Vercel KV or Upstash so limits are enforced across all serverless instances.
 
 ## Add to Framer
 

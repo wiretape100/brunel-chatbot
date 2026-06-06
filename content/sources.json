@@ -809,7 +809,9 @@
         "type":  "webpage",
         "title":  "Strategic Economic Audit of the West of England",
         "url":  "https://www.thebrunelcentre.co.uk/research/strategic-economic-audit-of-the-west-of-england",
-        "tags":  "research"
+        "tags":  [
+                     "research"
+                 ]
     },
     {
         "id":  "research-the-role-of-r-d-in-the-west-of-england’s-productivity",

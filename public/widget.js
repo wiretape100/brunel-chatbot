@@ -383,6 +383,10 @@
       var payload = await response.json();
 
       if (!response.ok) {
+        if (response.status === 429 && payload && payload.answer) {
+          setMessageContent(pending, payload.answer, true);
+          return;
+        }
         throw new Error(payload.error || "Chat request failed.");
       }
 
@@ -498,7 +502,7 @@
   function isSafeLinkUrl(value) {
     try {
       var parsed = new URL(value.replace(/&amp;/g, "&"));
-      return parsed.protocol === "https:" || parsed.protocol === "http:";
+      return parsed.protocol === "https:" && parsed.hostname.toLowerCase() === "www.thebrunelcentre.co.uk";
     } catch (error) {
       return false;
     }

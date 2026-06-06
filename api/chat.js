@@ -2,6 +2,7 @@ import { createOpenAIClient, createSupabaseClient } from "../lib/clients.js";
 import { getServerConfig } from "../lib/config.js";
 import { buildCatalogueAnswer } from "../lib/datahub-catalogue.js";
 import { applyCors, readJsonBody, sendError } from "../lib/http.js";
+import { checkRateLimit, getRequestIp, RATE_LIMIT_MESSAGE } from "../lib/rate-limit.js";
 import { buildRetrievalPlan, conceptLabel, describeRetrievalPlan, mergeSearchResults, sourceMatchesConcept } from "../lib/retrieval.js";
 import { buildStatisticalAnswer } from "../lib/statistics.js";
 
@@ -75,6 +76,16 @@ export default async function handler(req, res) {
 
   if (req.method !== "POST") {
     sendError(res, 405, "Use POST for chat requests.");
+    return;
+  }
+
+  const rateLimit = checkRateLimit(getRequestIp(req));
+  if (!rateLimit.allowed) {
+    res.status(429).json({
+      answer: RATE_LIMIT_MESSAGE,
+      sources: [],
+      rateLimited: true
+    });
     return;
   }
 
