@@ -1,13 +1,17 @@
 import assert from "node:assert/strict";
-import { buildDataHubCatalogueAnswer, detectDataHubCatalogueIntent } from "../lib/datahub-catalogue.js";
+import {
+  buildCatalogueAnswer,
+  buildDataHubCatalogueAnswer,
+  detectDataHubCatalogueIntent
+} from "../lib/datahub-catalogue.js";
 
-function urlsFromAnswer(answer) {
-  return [...String(answer || "").matchAll(/\]\((https:\/\/www\.thebrunelcentre\.co\.uk\/data-hub\/[^\s)]+)\)/g)]
+function urlsFromAnswer(answer, section) {
+  return [...String(answer || "").matchAll(new RegExp(`\\]\\((https://www\\.thebrunelcentre\\.co\\.uk/${section}/[^\\s)]+)\\)`, "g"))]
     .map((match) => normalizeUrl(match[1]));
 }
 
 function markdownLinksFromAnswer(answer) {
-  return [...String(answer || "").matchAll(/\[([^\]]+)\]\((https:\/\/www\.thebrunelcentre\.co\.uk\/data-hub\/[^\s)]+)\)/g)]
+  return [...String(answer || "").matchAll(/\[([^\]]+)\]\((https:\/\/www\.thebrunelcentre\.co\.uk\/[^\s)]+)\)/g)]
     .map((match) => ({ title: match[1], url: normalizeUrl(match[2]) }));
 }
 
@@ -18,30 +22,32 @@ function normalizeUrl(url) {
     .replace(/[.,;]+$/, "");
 }
 
-function assertConfirmedSources(result) {
-  assert.ok(result.sources.length > 0, "Expected confirmed source records");
-  for (const source of result.sources) {
-    assert.ok(source.title, "Source should have a title");
-    assert.ok(source.url?.startsWith("https://www.thebrunelcentre.co.uk/data-hub/"), `Invalid source URL: ${source.url}`);
-  }
+function assertCataloguePresentation(result) {
+  assert.equal(result.suppressSourceLinks, true, "Catalogue answers should suppress bottom source links");
+  assert.equal(result.sources.length, 0, "Catalogue answers should not append duplicate source cards");
+  assert.ok(!/—\s*https?:\/\//.test(result.answer), "Raw URLs should not be displayed after a dash");
+  assert.ok(!/â€”\s*https?:\/\//.test(result.answer), "Mojibake dash raw URLs should not be displayed");
+  assert.ok(!/-\s*https?:\/\//.test(result.answer), "Raw URL-only bullets should not be displayed");
+  assert.ok(markdownLinksFromAnswer(result.answer).length > 0, "Expected clickable Markdown links");
 }
 
 {
   const intent = detectDataHubCatalogueIntent("What Data Hub insights are available for the Greater West of England?");
   assert.equal(intent.kind, "initial");
-  const result = await buildDataHubCatalogueAnswer({
+  assert.equal(intent.type, "dataHub");
+
+  const result = await buildCatalogueAnswer({
     message: "What Data Hub insights are available for the Greater West of England?",
     history: []
   });
-  assert.ok(result.answer.includes("Here are some"));
+
+  assert.ok(result.answer.includes("Here are some Data Hub insights I found"));
   assert.ok(result.answer.includes("This is not the full list"));
   assert.ok(/show more/i.test(result.answer));
-  assert.ok(/filter/i.test(result.answer));
-  assertConfirmedSources(result);
-  assert.equal(result.sources.length, 8, "Expected first catalogue batch to stay concise");
-  assert.ok(!/—\s*https?:\/\//.test(result.answer), "Raw URLs should not be displayed after a dash");
-  assert.ok(!/-\s*https?:\/\//.test(result.answer), "Raw URL-only bullets should not be displayed");
-  assert.ok(markdownLinksFromAnswer(result.answer).length > 0, "Expected clickable Markdown links in answer text");
+  assert.ok(/narrow it by topic/i.test(result.answer));
+  assert.ok(/\[Data Hub insights\]\(https:\/\/www\.thebrunelcentre\.co\.uk\/data-hub\)/.test(result.answer));
+  assertCataloguePresentation(result);
+  assert.ok(urlsFromAnswer(result.answer, "data-hub").length <= 8, "Expected first Data Hub batch to stay concise");
 }
 
 {
@@ -49,50 +55,104 @@ function assertConfirmedSources(result) {
     message: "What Data Hub insights are available for the Greater West of England?",
     history: []
   });
-  const second = await buildDataHubCatalogueAnswer({
+  const second = await buildCatalogueAnswer({
     message: "show more",
     history: [
       { role: "user", content: "What Data Hub insights are available for the Greater West of England?" },
       { role: "assistant", content: first.answer }
     ]
   });
-  const firstUrls = new Set(urlsFromAnswer(first.answer));
-  const secondUrls = urlsFromAnswer(second.answer);
-  assert.ok(secondUrls.length > 0, "Expected second batch URLs");
-  assert.ok(secondUrls.every((url) => !firstUrls.has(url)), "Show more should not repeat first batch URLs");
+  const firstUrls = new Set(urlsFromAnswer(first.answer, "data-hub"));
+  const secondUrls = urlsFromAnswer(second.answer, "data-hub");
+  assert.ok(secondUrls.length > 0, "Expected second Data Hub batch URLs");
+  assert.ok(secondUrls.every((url) => !firstUrls.has(url)), "Data Hub show more should not repeat first batch URLs");
+  assertCataloguePresentation(second);
 }
 
 {
-  const first = await buildDataHubCatalogueAnswer({
-    message: "What Data Hub insights are available for the Greater West of England?",
+  const result = await buildCatalogueAnswer({ message: "Show housing Data Hub posts", history: [] });
+  assert.ok(/housing|affordability|house|dwellings/i.test(result.answer), result.answer);
+  assert.ok(!/Training and workforce development/i.test(result.answer), "Housing filter should not include unrelated skills post");
+  assertCataloguePresentation(result);
+}
+
+{
+  const result = await buildCatalogueAnswer({ message: "Could you list the research articles in the Centre?", history: [] });
+  assert.ok(result.answer.includes("Here are some Brunel Centre research articles I found"));
+  assert.ok(!/does not yet provide a full list/i.test(result.answer), "Research catalogue should not use poor fallback wording");
+  assert.ok(!/one by one/i.test(result.answer), "Research catalogue should not offer to list one by one");
+  assert.ok(/\[Brunel Centre research\]\(https:\/\/www\.thebrunelcentre\.co\.uk\/research\)/.test(result.answer));
+  assert.ok(urlsFromAnswer(result.answer, "research").length <= 8, "Expected first research batch to stay concise");
+  assertCataloguePresentation(result);
+}
+
+{
+  const first = await buildCatalogueAnswer({
+    message: "Could you list the research articles in the Centre?",
     history: []
   });
-  const second = await buildDataHubCatalogueAnswer({
-    message: "What more is available?",
-    history: [{ role: "assistant", content: first.answer }]
+  const second = await buildCatalogueAnswer({
+    message: "more articles",
+    history: [
+      { role: "user", content: "Could you list the research articles in the Centre?" },
+      { role: "assistant", content: first.answer }
+    ]
   });
-  const firstUrls = new Set(urlsFromAnswer(first.answer));
-  assert.ok(urlsFromAnswer(second.answer).every((url) => !firstUrls.has(url)));
+  const firstUrls = new Set(urlsFromAnswer(first.answer, "research"));
+  const secondUrls = urlsFromAnswer(second.answer, "research");
+  assert.ok(secondUrls.length > 0, "Expected second research batch URLs");
+  assert.ok(secondUrls.every((url) => !firstUrls.has(url)), "Research show more should not repeat first batch URLs");
+  assertCataloguePresentation(second);
 }
 
 {
-  const result = await buildDataHubCatalogueAnswer({ message: "Show housing Data Hub posts", history: [] });
-  assertConfirmedSources(result);
-  assert.ok(/housing|affordability|house/i.test(result.answer), result.answer);
-  assert.ok(!/Training and workforce development/i.test(result.answer), "Housing filter should not include unrelated skills post");
+  const result = await buildCatalogueAnswer({ message: "What skills research is available?", history: [] });
+  assert.ok(/skills|training|workforce|education/i.test(result.answer), result.answer);
+  assertCataloguePresentation(result);
 }
 
 {
-  const result = await buildDataHubCatalogueAnswer({ message: "Any skills posts?", history: [] });
-  assertConfirmedSources(result);
-  assert.ok(/skills|training|workforce/i.test(result.answer), result.answer);
+  const result = await buildCatalogueAnswer({
+    message: "Could you list the policy articles from the Brunel Centre?",
+    history: []
+  });
+  assert.ok(result.answer.includes("I couldn't find a dedicated set of policy articles"));
+  assert.ok(/\[Brunel Centre research\]\(https:\/\/www\.thebrunelcentre\.co\.uk\/research\)/.test(result.answer));
+  assert.ok(!/About the Brunel Centre|Consultancy|The Brunel Centre homepage/.test(result.answer));
+  assert.equal(result.suppressSourceLinks, true);
+  assert.equal(result.sources.length, 0);
 }
 
 {
-  const result = await buildDataHubCatalogueAnswer({ message: "Show all Data Hub posts", history: [] });
-  assert.ok(/too many|first/i.test(result.answer), result.answer);
-  assert.ok(/show more/i.test(result.answer), result.answer);
-  assertConfirmedSources(result);
+  const policy = await buildCatalogueAnswer({
+    message: "Could you list the policy articles from the Brunel Centre?",
+    history: []
+  });
+  const more = await buildCatalogueAnswer({
+    message: "show more",
+    history: [{ role: "assistant", content: policy.answer }]
+  });
+  assert.ok(/What would you like me to show more of/.test(more.answer));
+  assert.ok(/policy-related research topics/.test(more.answer));
 }
 
-console.log("Data Hub catalogue tests passed.");
+{
+  const result = await buildCatalogueAnswer({ message: "show more", history: [] });
+  assert.ok(/What would you like me to show more of/.test(result.answer));
+  assert.equal(result.suppressSourceLinks, true);
+  assert.equal(result.sources.length, 0);
+}
+
+{
+  const result = await buildCatalogueAnswer({ message: "Show more Data Hub posts", history: [] });
+  assert.ok(result.answer.includes("Here are some Data Hub insights I found"));
+  assertCataloguePresentation(result);
+}
+
+{
+  const result = await buildCatalogueAnswer({ message: "Show more productivity insights", history: [] });
+  assert.ok(result.answer.includes("productivity Data Hub insights"));
+  assertCataloguePresentation(result);
+}
+
+console.log("Catalogue tests passed.");

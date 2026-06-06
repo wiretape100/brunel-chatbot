@@ -388,7 +388,7 @@
 
       var answer = payload.answer || "No answer returned.";
       setMessageContent(pending, answer, true);
-      renderSources(pending, payload.sources || []);
+      renderSources(pending, payload.sources || [], payload.suppressSourceLinks);
       rememberConversation("user", text);
       rememberConversation("assistant", answer);
     } catch (error) {
@@ -504,8 +504,8 @@
     }
   }
 
-  function renderSources(messageNode, sources) {
-    if (!sources.length) return;
+  function renderSources(messageNode, sources, suppressSourceLinks) {
+    if (suppressSourceLinks || !sources.length) return;
 
     var list = document.createElement("div");
     list.className = "brunel-chat-sources";
