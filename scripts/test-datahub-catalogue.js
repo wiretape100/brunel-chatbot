@@ -32,6 +32,36 @@ function assertCataloguePresentation(result) {
 }
 
 {
+  const valueQuestions = [
+    "What is the employment rate of the Greater West of England?",
+    "Can you tell me the employment rate of the Greater West of England?",
+    "What is the housing affordability ratio in Bristol?",
+    "What is the GDP of the Greater West of England?",
+    "What is the GVA by industry?",
+    "What is the NEET rate?",
+    "What is the emissions total by local authority?",
+    "What is the population of Wiltshire?",
+    "What are business counts by industry?",
+    "What is the average travel time?",
+    "How many people were employed?",
+    "What are the local authority values?"
+  ];
+
+  for (const message of valueQuestions) {
+    assert.equal(
+      detectDataHubCatalogueIntent(message),
+      null,
+      `Specific value question should not trigger Data Hub catalogue mode: ${message}`
+    );
+    assert.equal(
+      await buildCatalogueAnswer({ message, history: [] }),
+      null,
+      `Specific value question should not return a catalogue answer: ${message}`
+    );
+  }
+}
+
+{
   const intent = detectDataHubCatalogueIntent("What Data Hub insights are available for the Greater West of England?");
   assert.equal(intent.kind, "initial");
   assert.equal(intent.type, "dataHub");
@@ -73,6 +103,12 @@ function assertCataloguePresentation(result) {
   const result = await buildCatalogueAnswer({ message: "Show housing Data Hub posts", history: [] });
   assert.ok(/housing|affordability|house|dwellings/i.test(result.answer), result.answer);
   assert.ok(!/Training and workforce development/i.test(result.answer), "Housing filter should not include unrelated skills post");
+  assertCataloguePresentation(result);
+}
+
+{
+  const result = await buildCatalogueAnswer({ message: "Show employment Data Hub posts", history: [] });
+  assert.ok(/employment|skills|labour|training|wages/i.test(result.answer), result.answer);
   assertCataloguePresentation(result);
 }
 

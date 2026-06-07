@@ -14,6 +14,48 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
   });
   const result = await buildStatisticalAnswer({
     supabase,
+    message: "What is the employment rate of the Greater West of England?",
+    contextMessage: "What is the employment rate of the Greater West of England?"
+  });
+
+  assert.ok(result, "Expected deterministic Greater West employment-rate answer");
+  assert.match(result.answer, /employment rate for the Greater West of England for 2025 is \*\*80\.8%\*\*/i);
+  assert.doesNotMatch(result.answer, /\bwas\s+\*\*?80\.8%/i);
+  assert.doesNotMatch(result.answer, /Here are some employment Data Hub insights/i);
+  assert.deepEqual(result.sources, [
+    {
+      title: EMPLOYMENT_POST_TITLE,
+      url: EMPLOYMENT_POST_URL,
+      similarity: null
+    }
+  ]);
+}
+
+{
+  const supabase = createMockSupabase({
+    rows: employmentRows({ includeCounts: false }),
+    facts: [],
+    documents: employmentDocuments()
+  });
+  const result = await buildStatisticalAnswer({
+    supabase,
+    message: "Can you tell me the employment rate of the Greater West of England?",
+    contextMessage: "Can you tell me the employment rate of the Greater West of England?"
+  });
+
+  assert.ok(result, "Expected deterministic Greater West employment-rate answer for wording variant");
+  assert.match(result.answer, /80\.8%/);
+  assert.doesNotMatch(result.answer, /Data Hub insights I found/i);
+}
+
+{
+  const supabase = createMockSupabase({
+    rows: employmentRows({ includeCounts: false }),
+    facts: [],
+    documents: employmentDocuments()
+  });
+  const result = await buildStatisticalAnswer({
+    supabase,
     message: "Can you give me the counts of the employment?",
     contextMessage: [
       "User: Can you tell what's the employment rate in the greater west of england",
@@ -24,7 +66,7 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
   });
 
   assert.ok(result, "Expected deterministic count follow-up answer");
-  assert.match(result.answer, /could not find employment counts/i);
+  assert.match(result.answer, /could not find a matching employment count/i);
   assert.doesNotMatch(result.answer, /sex and age/i);
   assert.doesNotMatch(result.answer, /82\.9%|83\.1%/);
   assert.deepEqual(supabase.log.map((item) => item.table), [
@@ -33,6 +75,31 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
     "brunel_dataset_facts"
   ]);
   assert.equal(supabase.log.some((item) => item.table === "brunel_dataset_rows" && item.filters.some((filter) => filter.key === "post_slug" && filter.value === SEX_AGE_POST_SLUG)), false);
+}
+
+{
+  const supabase = createMockSupabase({
+    rows: employmentRows({ includeCounts: false }),
+    facts: neetFacts(),
+    documents: employmentDocuments()
+  });
+  const result = await buildStatisticalAnswer({
+    supabase,
+    message: "Can you also tell me the count of the employment in the Greater West of England?",
+    contextMessage: [
+      "User: What is the NEET rate of Bristol and Swindon?",
+      "Assistant: Bristol, City of: 6.0%. Swindon: 2.8%. Source: NEET and activity not known among 16- and 17-year-olds in the Greater West of England, 2025.",
+      "User: Can you tell me the employment rate of the Greater West of England?",
+      `Assistant: The employment rate for the Greater West of England for 2025 is 80.8%. Source: ${EMPLOYMENT_POST_TITLE}.`
+    ].join("\n")
+  });
+
+  assert.ok(result, "Expected source-scoped employment count follow-up answer");
+  assert.match(result.answer, /could not find a matching employment count/i);
+  assert.match(result.answer, /employment rate/i);
+  assert.doesNotMatch(result.answer, /NEET|cohort|young people|activity not known/i);
+  assert.doesNotMatch(result.answer, /workbook|sheet|raw_data/i);
+  assert.equal(supabase.log.some((item) => item.table === "brunel_dataset_facts" && item.filters.some((filter) => filter.key === "post_slug" && filter.value === EMPLOYMENT_POST_SLUG)), true);
 }
 
 {
@@ -121,6 +188,23 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
   assert.match(result.answer, /I did not average the published percentages/i);
 }
 
+{
+  const supabase = createMockSupabase({
+    rows: [],
+    facts: neetFacts(),
+    documents: []
+  });
+  const result = await buildStatisticalAnswer({
+    supabase,
+    message: "Which workbook and sheet did the NEET rate for Bristol come from?",
+    contextMessage: "Which workbook and sheet did the NEET rate for Bristol come from?"
+  });
+
+  assert.ok(result);
+  assert.match(result.answer, /workbook "NEET and activity not known rates among 16- and 17-year-olds, 2025\.xlsx"/i);
+  assert.match(result.answer, /sheet "raw_data"/i);
+}
+
 console.log("Count follow-up tests passed.");
 
 function employmentDocuments() {
@@ -135,6 +219,7 @@ function employmentDocuments() {
 
 function employmentRows({ includeCounts }) {
   return [
+    row("Greater West of England", 80.8, null, null),
     row("Bath and North East Somerset", 75.3, includeCounts ? 100000 : null, includeCounts ? 132802 : null),
     row("Bristol, City of", 79.5, includeCounts ? 220000 : null, includeCounts ? 276730 : null),
     row("Gloucestershire", 82.0, includeCounts ? 250000 : null, includeCounts ? 304878 : null),
@@ -200,6 +285,59 @@ function fact(geography, measure, value) {
     unit: "count",
     dimensions: {}
   };
+}
+
+function neetFacts() {
+  return [
+    {
+      post_slug: "neet-and-activity-not-known-among-16-and-17-year-olds-in-the-greater-west-of-england-2025",
+      post_title: "NEET and activity not known among 16- and 17-year-olds in the Greater West of England, 2025",
+      post_url: "https://www.thebrunelcentre.co.uk/data-hub/neet-and-activity-not-known-among-16-and-17-year-olds-in-the-greater-west-of-england-2025",
+      workbook_path: "neet/NEET and activity not known rates among 16- and 17-year-olds, 2025.xlsx",
+      workbook_name: "NEET and activity not known rates among 16- and 17-year-olds, 2025.xlsx",
+      sheet_name: "raw_data",
+      geography: "Bristol, City of",
+      year: 2025,
+      measure: "NEET proportion",
+      value: 0.06,
+      value_text: null,
+      unit: "fraction",
+      dimensions: {},
+      metadata: {}
+    },
+    {
+      post_slug: "neet-and-activity-not-known-among-16-and-17-year-olds-in-the-greater-west-of-england-2025",
+      post_title: "NEET and activity not known among 16- and 17-year-olds in the Greater West of England, 2025",
+      post_url: "https://www.thebrunelcentre.co.uk/data-hub/neet-and-activity-not-known-among-16-and-17-year-olds-in-the-greater-west-of-england-2025",
+      workbook_path: "neet/NEET and activity not known rates among 16- and 17-year-olds, 2025.xlsx",
+      workbook_name: "NEET and activity not known rates among 16- and 17-year-olds, 2025.xlsx",
+      sheet_name: "raw_data",
+      geography: "Bristol, City of",
+      year: 2025,
+      measure: "Number NEET",
+      value: 579,
+      value_text: null,
+      unit: "count",
+      dimensions: {},
+      metadata: {}
+    },
+    {
+      post_slug: "neet-and-activity-not-known-among-16-and-17-year-olds-in-the-greater-west-of-england-2025",
+      post_title: "NEET and activity not known among 16- and 17-year-olds in the Greater West of England, 2025",
+      post_url: "https://www.thebrunelcentre.co.uk/data-hub/neet-and-activity-not-known-among-16-and-17-year-olds-in-the-greater-west-of-england-2025",
+      workbook_path: "neet/NEET and activity not known rates among 16- and 17-year-olds, 2025.xlsx",
+      workbook_name: "NEET and activity not known rates among 16- and 17-year-olds, 2025.xlsx",
+      sheet_name: "raw_data",
+      geography: "Bristol, City of",
+      year: 2025,
+      measure: "Cohort number",
+      value: 9690,
+      value_text: null,
+      unit: "count",
+      dimensions: {},
+      metadata: {}
+    }
+  ];
 }
 
 function createMockSupabase({ rows, facts, documents }) {

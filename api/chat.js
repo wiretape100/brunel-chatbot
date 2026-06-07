@@ -3,6 +3,13 @@ import { getServerConfig } from "../lib/config.js";
 import { buildCatalogueAnswer } from "../lib/datahub-catalogue.js";
 import { applyCors, readJsonBody, sendError } from "../lib/http.js";
 import { checkRateLimit, getRequestIp, RATE_LIMIT_MESSAGE } from "../lib/rate-limit.js";
+import { filterCompatibleDatasetItems } from "../lib/measure-compatibility.js";
+import {
+  isFollowUpReference,
+  isShortOrContextualDetailFollowUp,
+  selectRelevantHistoryForRetrieval,
+  shouldUseHistoryForRetrieval
+} from "../lib/retrieval-context.js";
 import { buildRetrievalPlan, conceptLabel, describeRetrievalPlan, mergeSearchResults, sourceMatchesConcept } from "../lib/retrieval.js";
 import { buildStatisticalAnswer } from "../lib/statistics.js";
 
@@ -48,8 +55,11 @@ Use clear language for a general public audience.
 When you use information from the context, cite the source title in the answer.
 For ordinary numerical lookup questions, use Brunel Centre article context first. If the exact value is not present there, use the analysis dataset rows fallback.
 The dataset fallback contains analysis-sheet rows unless raw facts are explicitly provided for calculation/count/method questions.
-For ordinary lookup answers, keep the wording natural and cite the public source title. Do not mention raw sheets, source rows, workbook internals, publishers, or methodology unless the user asks for calculation, counts, methods, or detail.
-For specific numerical questions, use analysis dataset rows only when article context does not include the value. Mention the Data Hub post title, and include the workbook only when helpful.
+For ordinary lookup answers, keep the wording natural and cite the public source title. Do not mention raw sheets, source rows, workbook internals, publishers, Supabase, embeddings, or backend methodology unless the user explicitly asks which workbook, sheet, source file, or technical method was used. For count or calculation answers, explain the public method and source title without exposing backend table or sheet names unless asked.
+For specific numerical questions, use analysis dataset rows only when article context does not include the value. Mention the public Brunel Centre source title. Do not include workbook names, sheet names, raw_data, analysis rows, raw facts, Supabase, or embedding details unless the user explicitly asks which workbook/sheet/source file was used or asks for technical methodology.
+For follow-up questions asking for counts, numbers, denominators, totals, local authority breakdowns, age/sex/industry splits, or "what about" another place, preserve the previous topic, public source, linked dataset, geography and period where the latest substantive answer makes that clear. Do not use older unrelated conversation turns as the topic.
+Match the requested measure carefully before using dataset fallback rows or raw facts. Do not substitute related but different indicators: employment counts are not NEET cohorts; housing affordability is not housing stock; business counts are not employee counts unless employees are requested; population count is not population change unless change is requested; emissions totals are not energy consumption unless energy is requested.
+For Greater West of England aggregate questions, first look for an aggregate row or article value for Greater West of England/GWE/overall. If the user asks for all local authorities or a local authority breakdown, return local authority rows. Do not calculate an aggregate by averaging local authority percentages. Only calculate an aggregate when valid matching numerators and denominators are available.
 Do not conflate different measure labels. In particular, "NEET rate" and "NEET or activity not known rate" are different measures. If the user asks for NEET rate, use NEET-only values. If the available row is "NEET/Not known", name it that way.
 Do not offer extra calculations or follow-up options unless the user asks for them or they are needed to clarify an ambiguity.
 For calculations, follow official-statistics style discipline: do not add, subtract, or average percentages unless the context explicitly says that method is valid.
@@ -141,10 +151,16 @@ export default async function handler(req, res) {
     const supabase = createSupabaseClient(config);
     const includeRawFacts = shouldIncludeRawFacts(message);
     const useHistoryForRetrieval = shouldUseHistoryForRetrieval(message);
-    const retrievalQuery = buildRetrievalQuery(message, history);
+    const relevantHistory = useHistoryForRetrieval
+      ? selectRelevantHistoryForRetrieval(message, history)
+      : [];
+    const retrievalQuery = buildRetrievalQuery(message, relevantHistory);
+    const measureCompatibilityQuery = relevantHistory.length
+      ? `${formatHistory(relevantHistory)}\nCurrent question: ${message}`
+      : message;
     const retrievalPlan = buildRetrievalPlan({ message, primaryQuery: retrievalQuery });
     const promptHistory = useHistoryForRetrieval
-      ? formatHistory(history)
+      ? formatHistory(relevantHistory)
       : "Not used because the current question is a new topic.";
 
     if (shouldUseStatisticalBackend(message)) {
@@ -205,21 +221,21 @@ export default async function handler(req, res) {
       query: message,
       limit: retrievalPlan.isMultiConcept ? 10 : 5
     });
-    const datasetSummaries = mergeSearchResults(datasetSummaryGroups, {
+    const datasetSummaries = filterCompatibleDatasetItems(mergeSearchResults(datasetSummaryGroups, {
       concepts: retrievalPlan.concepts,
       query: message,
       limit: retrievalPlan.isMultiConcept ? 8 : 4
-    });
-    const datasetRows = mergeSearchResults(datasetRowGroups, {
+    }), measureCompatibilityQuery);
+    const datasetRows = filterCompatibleDatasetItems(mergeSearchResults(datasetRowGroups, {
       concepts: retrievalPlan.concepts,
       query: message,
       limit: retrievalPlan.isMultiConcept ? 12 : 8
-    });
-    const datasetFacts = mergeSearchResults(datasetFactGroups, {
+    }), measureCompatibilityQuery);
+    const datasetFacts = filterCompatibleDatasetItems(mergeSearchResults(datasetFactGroups, {
       concepts: retrievalPlan.concepts,
       query: message,
       limit: retrievalPlan.isMultiConcept ? 16 : 12
-    });
+    }), measureCompatibilityQuery);
 
     const sources = dedupeSources(matches || []);
     const datasetSources = dedupeDatasetSources(datasetSummaries, datasetRows, datasetFacts);
@@ -349,7 +365,7 @@ function expandRetrievalQuery(message) {
 
   if (phraseInText(clean, "greater west of england") || phraseInText(clean, "gwe")) {
     additions.push(
-      "Greater West of England Bath and North East Somerset Bristol Gloucestershire North Somerset South Gloucestershire Swindon Wiltshire local authorities"
+      "Greater West of England GWE aggregate overall total Bath and North East Somerset Bristol Gloucestershire North Somerset South Gloucestershire Swindon Wiltshire local authorities"
     );
   }
 
@@ -370,16 +386,6 @@ function expandRetrievalQuery(message) {
     : message;
 }
 
-function shouldUseHistoryForRetrieval(message) {
-  const clean = normalizePlainText(message);
-  if (!clean) return false;
-
-  if (isCountDetailFollowUp(clean)) return true;
-  if (isStandaloneQuestion(clean)) return false;
-
-  return isFollowUpReference(clean);
-}
-
 function shouldUseHistoryForStatisticalFollowUp(message) {
   const clean = String(message || "")
     .toLowerCase()
@@ -390,25 +396,7 @@ function shouldUseHistoryForStatisticalFollowUp(message) {
   if (!clean) return false;
   if (/\b(age|aged|male|female|sex|gender|split|breakdown|by|explain|difference|differences|definition|define|meaning|basically|mean|means)\b/.test(clean)) return false;
 
-  return isCountDetailFollowUp(clean) || isFollowUpReference(clean);
-}
-
-function isStandaloneQuestion(clean) {
-  return /\b(what|which|where|when|why|how|who|tell me|show me|give me|could you|can you|do they|does it|does the|is there|are there|i want to know|would love to know)\b/.test(clean) &&
-    /\b(neet|employment|gdp|wage|wages|population|housing|transport|emissions|productivity|skills|sectors|data|datahub|policy|policies|news|latest|recent|research|article|articles|rate|rates|percent|percentage)\b/.test(clean);
-}
-
-function isFollowUpReference(clean) {
-  return /^(yes|yeah|yep|that|those|same|also|and for|what about|can you give that|give that|can you do that|do that|is that)\b/.test(clean) ||
-    /\b(as well|that as well|those as well|for that|for them|the same)\b/.test(clean);
-}
-
-function isCountDetailFollowUp(clean) {
-  const hasCountLanguage = /\b(count|counts|number|numbers|how many|total|total number|numerator|denominator|base|sample size|people employed|employed people|employment count|count of employment|counts of employment|workforce count|cohort|raw|detail|details)\b/.test(clean);
-  if (!hasCountLanguage) return false;
-
-  const hasStandaloneTopic = /\b(neet|employment|employed|workforce|gdp|gva|population|housing|transport|emissions|productivity|skills|wages|research|data hub)\b/.test(clean);
-  return !hasStandaloneTopic || /\b(employment|employed|workforce)\b/.test(clean);
+  return isShortOrContextualDetailFollowUp(clean) || isFollowUpReference(clean);
 }
 
 function phraseInText(cleanText, cleanPhrase) {
@@ -744,11 +732,11 @@ function formatSummaryContent(content, includeRawFacts) {
 }
 
 function shouldIncludeRawFacts(message) {
-  return /\b(calculate|calculation|compute|combined|combine|weighted|average|aggregate|cohort|count|counts|number|numbers|how many|total|total number|numerator|denominator|base|sample size|people employed|employed people|employment count|count of employment|counts of employment|workforce count|method|raw|detail|details)\b/i.test(message);
+  return /\b(calculate|calculation|compute|combined|combine|weighted|average|aggregate|cohort|count|counts|number|numbers|how many|total|total number|numerator|denominator|base|sample size|people employed|employed people|employment count|count of employment|counts of employment|workforce count|method|raw|detail|details|workbook|workbooks|sheet|sheets|source file|source files)\b/i.test(message);
 }
 
 function shouldUseStatisticalBackend(message) {
-  return /\b(calculate|calculation|compute|computed|combined|combine|weighted|average|aggregate|aggregated|cohort|count|counts|number|numbers|how many|total|total number|numerator|denominator|base|sample size|people employed|employed people|employment count|count of employment|counts of employment|workforce count|method|raw)\b/i.test(message);
+  return /\b(employment\s+rate|employment\s+rates|employement\s+rate|employement\s+rates|calculate|calculation|compute|computed|combined|combine|weighted|average|aggregate|aggregated|cohort|count|counts|number|numbers|how many|total|total number|numerator|denominator|base|sample size|people employed|employed people|employment count|count of employment|counts of employment|workforce count|method|raw)\b/i.test(message);
 }
 
 function classifySmallTalk(message) {
@@ -827,3 +815,10 @@ function isAcknowledgementOnly(message) {
 
   return /^(ok|okay|alright|all right|fine|great|cool|got it|understood|no problem|sounds good)$/.test(clean);
 }
+
+export const __testHooks = {
+  buildRetrievalQuery,
+  selectRelevantHistoryForRetrieval,
+  shouldUseHistoryForRetrieval,
+  shouldIncludeRawFacts
+};
