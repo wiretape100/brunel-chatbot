@@ -14,7 +14,8 @@
     "test:generic-guardrails": "node scripts/test-generic-retrieval-guardrails.js",
     "test:hardening": "node scripts/test-production-hardening.js",
     "test:retrieval": "node scripts/test-retrieval-plan.js",
-    "test:small-talk": "node scripts/test-small-talk.js"
+    "test:small-talk": "node scripts/test-small-talk.js",
+    "test:article-first": "node scripts/test-statistical-article-first-flow.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",

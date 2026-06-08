@@ -8,6 +8,8 @@ const EMPLOYMENT_POST_TITLE = "Employment rates in the Greater West of England c
 const EMPLOYMENT_POST_URL = "https://www.thebrunelcentre.co.uk/data-hub/employment-rates-in-the-greater-west-of-england-compared-to-other-uk-regions";
 const EMPLOYMENT_POST_SLUG = "employment-rates-in-the-greater-west-of-england-compared-to-other-uk-regions";
 const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-sex-and-age-2025";
+const NEET_POST_TITLE = "NEET and activity not known among 16- and 17-year-olds in the Greater West of England, 2025";
+const NEET_POST_URL = "https://www.thebrunelcentre.co.uk/data-hub/neet-and-activity-not-known-among-16-and-17-year-olds-in-the-greater-west-of-england-2025";
 
 {
   const supabase = createMockSupabase({
@@ -19,6 +21,22 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
     supabase,
     message: "What is the employment rate of the Greater West of England?",
     contextMessage: "What is the employment rate of the Greater West of England?"
+  });
+
+  assert.equal(result, null, "Direct statistical answers should not bypass article-first evidence context");
+}
+
+{
+  const supabase = createMockSupabase({
+    rows: employmentRows({ includeCounts: false }),
+    facts: [],
+    documents: employmentDocuments()
+  });
+  const result = await buildStatisticalAnswer({
+    supabase,
+    message: "What is the employment rate of the Greater West of England?",
+    contextMessage: "What is the employment rate of the Greater West of England?",
+    evidenceContext: employmentEvidenceContext()
   });
 
   assert.ok(result, "Expected deterministic Greater West employment-rate answer");
@@ -52,7 +70,8 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
   const result = await buildStatisticalAnswer({
     supabase,
     message,
-    contextMessage: message
+    contextMessage: message,
+    evidenceContext: employmentEvidenceContext()
   });
 
   assert.equal(result, null, "Inward investment should not trigger deterministic employment fallback");
@@ -69,7 +88,8 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
   const result = await buildStatisticalAnswer({
     supabase,
     message,
-    contextMessage: message
+    contextMessage: message,
+    evidenceContext: employmentEvidenceContext()
   });
   const plan = buildQuestionPlan({ message });
   const verified = verifyAnswer({
@@ -101,7 +121,8 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
   const result = await buildStatisticalAnswer({
     supabase,
     message: "Can you tell me the employment rate of the Greater West of England?",
-    contextMessage: "Can you tell me the employment rate of the Greater West of England?"
+    contextMessage: "Can you tell me the employment rate of the Greater West of England?",
+    evidenceContext: employmentEvidenceContext()
   });
 
   assert.ok(result, "Expected deterministic Greater West employment-rate answer for wording variant");
@@ -119,7 +140,8 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
   const result = await buildStatisticalAnswer({
     supabase,
     message,
-    contextMessage: message
+    contextMessage: message,
+    evidenceContext: employmentEvidenceContext()
   });
 
   assert.ok(result, "Expected aggregate-plus-breakdown employment-rate answer");
@@ -141,7 +163,8 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
   const result = await buildStatisticalAnswer({
     supabase,
     message: "What are the employment rates for local authorities within the Greater West of England?",
-    contextMessage: "What are the employment rates for local authorities within the Greater West of England?"
+    contextMessage: "What are the employment rates for local authorities within the Greater West of England?",
+    evidenceContext: employmentEvidenceContext()
   });
 
   assert.ok(result, "Expected local-authority-only employment-rate answer");
@@ -164,7 +187,8 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
       `Assistant: Using the latest complete year available in the Brunel Centre data (2025). Source: ${EMPLOYMENT_POST_TITLE}.`,
       "User: Can you tell me what's the employment rates of all local authorities within greater west of england?",
       "Assistant: Bath and North East Somerset: 75.3%. Bristol, City of: 79.5%. Gloucestershire: 82.0%. North Somerset: 82.1%. South Gloucestershire: 82.9%. Swindon: 76.9%. Wiltshire: 83.1%."
-    ].join("\n")
+    ].join("\n"),
+    evidenceContext: employmentEvidenceContext()
   });
 
   assert.ok(result, "Expected deterministic count follow-up answer");
@@ -193,7 +217,8 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
       "Assistant: Bristol, City of: 6.0%. Swindon: 2.8%. Source: NEET and activity not known among 16- and 17-year-olds in the Greater West of England, 2025.",
       "User: Can you tell me the employment rate of the Greater West of England?",
       `Assistant: The employment rate for the Greater West of England for 2025 is 80.8%. Source: ${EMPLOYMENT_POST_TITLE}.`
-    ].join("\n")
+    ].join("\n"),
+    evidenceContext: employmentEvidenceContext()
   });
 
   assert.ok(result, "Expected source-scoped employment count follow-up answer");
@@ -213,7 +238,8 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
   const result = await buildStatisticalAnswer({
     supabase,
     message: "Can you give me the employment counts by local authority?",
-    contextMessage: "Can you give me the employment counts by local authority?"
+    contextMessage: "Can you give me the employment counts by local authority?",
+    evidenceContext: employmentEvidenceContext()
   });
 
   assert.ok(result);
@@ -232,7 +258,8 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
   const result = await buildStatisticalAnswer({
     supabase,
     message: "How many people were employed in the Greater West of England?",
-    contextMessage: "How many people were employed in the Greater West of England?"
+    contextMessage: "How many people were employed in the Greater West of England?",
+    evidenceContext: employmentEvidenceContext()
   });
 
   assert.ok(result);
@@ -250,7 +277,8 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
   const result = await buildStatisticalAnswer({
     supabase,
     message: "What is the employment rate by sex and age?",
-    contextMessage: "What is the employment rate by sex and age?"
+    contextMessage: "What is the employment rate by sex and age?",
+    evidenceContext: employmentEvidenceContext()
   });
 
   assert.equal(result, null, "Sex-and-age employment rate questions should continue to the normal grounded answer flow");
@@ -265,7 +293,8 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
   const result = await buildStatisticalAnswer({
     supabase,
     message: "Can you calculate the overall employment rate from the local authority data?",
-    contextMessage: "Can you calculate the overall employment rate from the local authority data?"
+    contextMessage: "Can you calculate the overall employment rate from the local authority data?",
+    evidenceContext: employmentEvidenceContext()
   });
 
   assert.ok(result);
@@ -282,7 +311,8 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
   const result = await buildStatisticalAnswer({
     supabase,
     message: "Can you calculate the overall employment rate from the local authority data?",
-    contextMessage: "Can you calculate the overall employment rate from the local authority data?"
+    contextMessage: "Can you calculate the overall employment rate from the local authority data?",
+    evidenceContext: employmentEvidenceContext()
   });
 
   assert.ok(result);
@@ -299,7 +329,8 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
   const result = await buildStatisticalAnswer({
     supabase,
     message: "Which workbook and sheet did the NEET rate for Bristol come from?",
-    contextMessage: "Which workbook and sheet did the NEET rate for Bristol come from?"
+    contextMessage: "Which workbook and sheet did the NEET rate for Bristol come from?",
+    evidenceContext: neetEvidenceContext()
   });
 
   assert.ok(result);
@@ -317,6 +348,30 @@ function employmentDocuments() {
       content: "The article reports employment rates for the Greater West of England and local authorities."
     }
   ];
+}
+
+function employmentEvidenceContext() {
+  return {
+    articleTextChecked: true,
+    selectedSources: [
+      {
+        title: EMPLOYMENT_POST_TITLE,
+        url: EMPLOYMENT_POST_URL
+      }
+    ]
+  };
+}
+
+function neetEvidenceContext() {
+  return {
+    articleTextChecked: true,
+    selectedSources: [
+      {
+        title: NEET_POST_TITLE,
+        url: NEET_POST_URL
+      }
+    ]
+  };
 }
 
 function employmentRows({ includeCounts }) {

@@ -16,7 +16,6 @@ import {
 } from "../lib/retrieval-context.js";
 import { buildRetrievalPlan, conceptLabel, describeRetrievalPlan, mergeSearchResults, sourceMatchesConcept } from "../lib/retrieval.js";
 import { scopeDatasetFallbackToArticleSources } from "../lib/source-hierarchy.js";
-import { buildStatisticalAnswer } from "../lib/statistics.js";
 
 const RETRIEVAL_EXPANSIONS = [
   {
@@ -148,12 +147,6 @@ export default async function handler(req, res) {
       return;
     }
 
-    const neetExplanation = buildNeetExplanationAnswer(message, history);
-    if (neetExplanation) {
-      res.status(200).json(neetExplanation);
-      return;
-    }
-
     const config = getServerConfig();
     const openai = createOpenAIClient(config);
     const supabase = createSupabaseClient(config);
@@ -171,31 +164,6 @@ export default async function handler(req, res) {
     const promptHistory = useHistoryForRetrieval
       ? formatHistory(relevantHistory)
       : "Not used because the current question is a new topic.";
-
-    if (shouldUseStatisticalBackend(message)) {
-      const statisticalContextMessage = shouldUseHistoryForStatisticalFollowUp(message)
-        ? retrievalQuery
-        : message;
-      const statisticalAnswer = await buildStatisticalAnswer({
-        supabase,
-        message,
-        contextMessage: statisticalContextMessage
-      });
-      if (statisticalAnswer) {
-        const verified = verifyAnswer({
-          answer: statisticalAnswer.answer,
-          plan: questionPlan,
-          sources: statisticalAnswer.sources,
-          datasetSources: []
-        });
-
-        res.status(200).json({
-          ...statisticalAnswer,
-          answer: verified.ok ? statisticalAnswer.answer : verified.repairedAnswer
-        });
-        return;
-      }
-    }
 
     const embeddingResponse = await openai.embeddings.create({
       model: config.embeddingModel,
@@ -476,36 +444,6 @@ function phraseInText(cleanText, cleanPhrase) {
 
 function escapeRegExp(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function buildNeetExplanationAnswer(message, history) {
-  const clean = normalizePlainText(message);
-  const recent = normalizePlainText(formatHistory(history));
-  const asksNeetMeaning =
-    /\b(what is|what are|what does|what do|meaning of|define|definition|basically)\b/.test(clean) &&
-    /\bneet\b/.test(clean);
-  const asksDifference =
-    /\b(explain|difference|differences|different)\b/.test(clean) &&
-    (/\bneet\b/.test(clean) || /\bneet\b/.test(recent));
-
-  if (!asksNeetMeaning && !asksDifference) return null;
-
-  return {
-    answer: [
-      "NEET means young people who are not in education, employment or training.",
-      "",
-      "In this Brunel Centre dataset, the measures are separate:",
-      "",
-      "- **NEET rate**: the proportion of 16- and 17-year-olds recorded as NEET.",
-      "- **Activity not known rate**: the proportion whose education, employment or training status is not known.",
-      "- **NEET or activity not known rate**: a combined measure that counts both groups together.",
-      "",
-      "So the NEET rates you asked for Bristol and Swindon are NEET-only values, not the combined \"NEET or activity not known\" values.",
-      "",
-      "Source: NEET and activity not known among 16- and 17-year-olds in the Greater West of England, 2025."
-    ].join("\n"),
-    sources: []
-  };
 }
 
 function normalizePlainText(value) {
@@ -803,10 +741,6 @@ function formatSummaryContent(content, includeRawFacts) {
 
 function shouldIncludeRawFacts(message) {
   return /\b(calculate|calculation|compute|combined|combine|weighted|average|aggregate|cohort|count|counts|number|numbers|how many|total|total number|numerator|denominator|base|sample size|people employed|employed people|employment count|count of employment|counts of employment|workforce count|method|raw|detail|details|workbook|workbooks|sheet|sheets|source file|source files)\b/i.test(message);
-}
-
-function shouldUseStatisticalBackend(message) {
-  return /\b(employment\s+rate|employment\s+rates|employement\s+rate|employement\s+rates|calculate|calculation|compute|computed|combined|combine|weighted|average|aggregate|aggregated|cohort|count|counts|number|numbers|how many|total|total number|numerator|denominator|base|sample size|people employed|employed people|employment count|count of employment|counts of employment|workforce count|method|raw)\b/i.test(message);
 }
 
 function classifySmallTalk(message) {
