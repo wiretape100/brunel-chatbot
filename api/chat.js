@@ -1,9 +1,12 @@
 import { createOpenAIClient, createSupabaseClient } from "../lib/clients.js";
 import { getServerConfig } from "../lib/config.js";
+import { aggregateBreakdownInstruction, detectAggregateBreakdownIntent } from "../lib/aggregate-breakdown.js";
+import { verifyAnswer } from "../lib/answer-verifier.js";
 import { buildCatalogueAnswer } from "../lib/datahub-catalogue.js";
 import { applyCors, readJsonBody, sendError } from "../lib/http.js";
 import { checkRateLimit, getRequestIp, RATE_LIMIT_MESSAGE } from "../lib/rate-limit.js";
 import { filterCompatibleDatasetItems } from "../lib/measure-compatibility.js";
+import { buildQuestionPlan, planRequiresRawFacts } from "../lib/question-planner.js";
 import {
   isFollowUpReference,
   isShortOrContextualDetailFollowUp,
@@ -11,6 +14,7 @@ import {
   shouldUseHistoryForRetrieval
 } from "../lib/retrieval-context.js";
 import { buildRetrievalPlan, conceptLabel, describeRetrievalPlan, mergeSearchResults, sourceMatchesConcept } from "../lib/retrieval.js";
+import { scopeDatasetFallbackToArticleSources } from "../lib/source-hierarchy.js";
 import { buildStatisticalAnswer } from "../lib/statistics.js";
 
 const RETRIEVAL_EXPANSIONS = [
@@ -53,13 +57,14 @@ Use the recent conversation only to understand follow-up references such as "tha
 For geography wording, treat "Bath", "B&NES", "BANES", and close misspellings as Bath and North East Somerset. Treat "Glos" as Gloucestershire and "South Glos" as South Gloucestershire. In answers, use the official geography name when possible.
 Use clear language for a general public audience.
 When you use information from the context, cite the source title in the answer.
-For ordinary numerical lookup questions, use Brunel Centre article context first. If the exact value is not present there, use the analysis dataset rows fallback.
-The dataset fallback contains analysis-sheet rows unless raw facts are explicitly provided for calculation/count/method questions.
+For every indicator, variable, aggregate value, breakdown value, count, denominator, numerator, total, detailed value or calculation request, preserve the Brunel Centre source hierarchy: use Brunel Centre article/page text first; if the value is not there, use linked Data Hub analysis rows for the same public post; if still not found, use structured raw facts for the same public post; if those are unavailable or not parseable, use fallback raw/source-data row snippets for the same public post where available; only then say the requested value is not available in the checked Brunel Centre source and linked data.
+The dataset fallback is source-scoped to linked public Data Hub posts where an article/page match is available. Do not skip from article text directly to a broad unrelated source. Do not search all raw data globally before checking the linked dataset for the current article.
 For ordinary lookup answers, keep the wording natural and cite the public source title. Do not mention raw sheets, source rows, workbook internals, publishers, Supabase, embeddings, or backend methodology unless the user explicitly asks which workbook, sheet, source file, or technical method was used. For count or calculation answers, explain the public method and source title without exposing backend table or sheet names unless asked.
 For specific numerical questions, use analysis dataset rows only when article context does not include the value. Mention the public Brunel Centre source title. Do not include workbook names, sheet names, raw_data, analysis rows, raw facts, Supabase, or embedding details unless the user explicitly asks which workbook/sheet/source file was used or asks for technical methodology.
 For follow-up questions asking for counts, numbers, denominators, totals, local authority breakdowns, age/sex/industry splits, or "what about" another place, preserve the previous topic, public source, linked dataset, geography and period where the latest substantive answer makes that clear. Do not use older unrelated conversation turns as the topic.
 Match the requested measure carefully before using dataset fallback rows or raw facts. Do not substitute related but different indicators: employment counts are not NEET cohorts; housing affordability is not housing stock; business counts are not employee counts unless employees are requested; population count is not population change unless change is requested; emissions totals are not energy consumption unless energy is requested.
 For Greater West of England aggregate questions, first look for an aggregate row or article value for Greater West of England/GWE/overall. If the user asks for all local authorities or a local authority breakdown, return local authority rows. Do not calculate an aggregate by averaging local authority percentages. Only calculate an aggregate when valid matching numerators and denominators are available.
+If the user asks for both an aggregate area value and a breakdown in the same question, return both. Do not let "local authorities", "breakdown", "as well", or "also provide" suppress the aggregate part. Return the aggregate first, the breakdown second, and clearly say if either part is missing from the checked Brunel Centre article and linked data.
 Do not conflate different measure labels. In particular, "NEET rate" and "NEET or activity not known rate" are different measures. If the user asks for NEET rate, use NEET-only values. If the available row is "NEET/Not known", name it that way.
 Do not offer extra calculations or follow-up options unless the user asks for them or they are needed to clarify an ambiguity.
 For calculations, follow official-statistics style discipline: do not add, subtract, or average percentages unless the context explicitly says that method is valid.
@@ -109,6 +114,8 @@ export default async function handler(req, res) {
       return;
     }
 
+    const questionPlan = buildQuestionPlan({ message, history });
+
     const smallTalkIntent = classifySmallTalk(message);
     if (smallTalkIntent) {
       res.status(200).json({
@@ -149,7 +156,7 @@ export default async function handler(req, res) {
     const config = getServerConfig();
     const openai = createOpenAIClient(config);
     const supabase = createSupabaseClient(config);
-    const includeRawFacts = shouldIncludeRawFacts(message);
+    const includeRawFacts = shouldIncludeRawFacts(message) || planRequiresRawFacts(questionPlan);
     const useHistoryForRetrieval = shouldUseHistoryForRetrieval(message);
     const relevantHistory = useHistoryForRetrieval
       ? selectRelevantHistoryForRetrieval(message, history)
@@ -159,6 +166,7 @@ export default async function handler(req, res) {
       ? `${formatHistory(relevantHistory)}\nCurrent question: ${message}`
       : message;
     const retrievalPlan = buildRetrievalPlan({ message, primaryQuery: retrievalQuery });
+    const aggregateBreakdownContext = aggregateBreakdownInstruction(message);
     const promptHistory = useHistoryForRetrieval
       ? formatHistory(relevantHistory)
       : "Not used because the current question is a new topic.";
@@ -173,7 +181,17 @@ export default async function handler(req, res) {
         contextMessage: statisticalContextMessage
       });
       if (statisticalAnswer) {
-        res.status(200).json(statisticalAnswer);
+        const verified = verifyAnswer({
+          answer: statisticalAnswer.answer,
+          plan: questionPlan,
+          sources: statisticalAnswer.sources,
+          datasetSources: []
+        });
+
+        res.status(200).json({
+          ...statisticalAnswer,
+          answer: verified.ok ? statisticalAnswer.answer : verified.repairedAnswer
+        });
         return;
       }
     }
@@ -221,21 +239,30 @@ export default async function handler(req, res) {
       query: message,
       limit: retrievalPlan.isMultiConcept ? 10 : 5
     });
-    const datasetSummaries = filterCompatibleDatasetItems(mergeSearchResults(datasetSummaryGroups, {
+    const rawDatasetSummaries = filterCompatibleDatasetItems(mergeSearchResults(datasetSummaryGroups, {
       concepts: retrievalPlan.concepts,
       query: message,
       limit: retrievalPlan.isMultiConcept ? 8 : 4
     }), measureCompatibilityQuery);
-    const datasetRows = filterCompatibleDatasetItems(mergeSearchResults(datasetRowGroups, {
+    const rawDatasetRows = filterCompatibleDatasetItems(mergeSearchResults(datasetRowGroups, {
       concepts: retrievalPlan.concepts,
       query: message,
       limit: retrievalPlan.isMultiConcept ? 12 : 8
     }), measureCompatibilityQuery);
-    const datasetFacts = filterCompatibleDatasetItems(mergeSearchResults(datasetFactGroups, {
+    const rawDatasetFacts = filterCompatibleDatasetItems(mergeSearchResults(datasetFactGroups, {
       concepts: retrievalPlan.concepts,
       query: message,
       limit: retrievalPlan.isMultiConcept ? 16 : 12
     }), measureCompatibilityQuery);
+    const scopedDatasetContext = scopeDatasetFallbackToArticleSources({
+      matches,
+      datasetSummaries: rawDatasetSummaries,
+      datasetRows: rawDatasetRows,
+      datasetFacts: rawDatasetFacts
+    });
+    const datasetSummaries = scopedDatasetContext.datasetSummaries;
+    const datasetRows = scopedDatasetContext.datasetRows;
+    const datasetFacts = scopedDatasetContext.datasetFacts;
 
     const sources = dedupeSources(matches || []);
     const datasetSources = dedupeDatasetSources(datasetSummaries, datasetRows, datasetFacts);
@@ -272,8 +299,16 @@ export default async function handler(req, res) {
             "Recent conversation:",
             promptHistory || "No recent conversation.",
             "",
+            "Internal question plan. Use this to choose the source hierarchy and answer shape, but do not show this JSON, internal labels, or reasoning to the user:",
+            formatQuestionPlanForPrompt(questionPlan),
+            "",
+            `Selected reasoning effort guidance: ${questionPlan.reasoningEffort}. This is internal guidance only; do not mention it.`,
+            "",
             "Retrieval strategy:",
             describeRetrievalPlan(retrievalPlan) || "Standard single-topic retrieval was used.",
+            "",
+            "Aggregate and breakdown handling:",
+            aggregateBreakdownContext || "No aggregate-plus-breakdown intent detected.",
             "",
             "Confirmed topic-source map:",
             topicSourceContext || "Not applicable.",
@@ -281,7 +316,7 @@ export default async function handler(req, res) {
             "Brunel Centre article context:",
             context || "No article context found.",
             "",
-            "Analysis dataset fallback context. Use this only if the article context does not contain the exact value, or if the user asks for calculation/counts/method detail:",
+            "Linked data fallback context. Use this only after checking the article context first. Where a Data Hub article match was retrieved, this context is scoped to the same public post and follows analysis rows, structured raw facts, then fallback source-row snippets:",
             datasetContext || "No dataset context found."
           ].join("\n")
         }
@@ -292,10 +327,16 @@ export default async function handler(req, res) {
 
     const allSources = [...sources, ...datasetSources];
     const visibleSources = filterSourcesForAnswer(answer, allSources);
+    const verified = verifyAnswer({
+      answer: answer || "",
+      plan: questionPlan,
+      sources,
+      datasetSources
+    });
 
     res.status(200).json({
-      answer: answer || "I could not generate an answer. Please try again.",
-      sources: visibleSources
+      answer: verified.ok ? (answer || "I could not generate an answer. Please try again.") : verified.repairedAnswer,
+      sources: verified.ok ? visibleSources : []
     });
   } catch (error) {
     sendError(res, 500, "Chat request failed.", error.message);
@@ -341,6 +382,26 @@ function formatHistory(history) {
     .join("\n");
 }
 
+function formatQuestionPlanForPrompt(plan) {
+  const publicSafePlan = {
+    intent: plan.intent,
+    topics: plan.topics,
+    indicator: plan.indicator,
+    measureRequested: plan.measureRequested,
+    geography: plan.geography,
+    breakdowns: plan.breakdowns,
+    period: plan.period,
+    isFollowUp: plan.isFollowUp,
+    previousSourceRequired: plan.previousSourceRequired,
+    sourceHierarchy: plan.sourceHierarchy,
+    calculationNeeded: plan.calculationNeeded,
+    calculationAllowed: plan.calculationAllowed,
+    clarificationNeeded: plan.clarificationNeeded
+  };
+
+  return JSON.stringify(publicSafePlan, null, 2);
+}
+
 function buildRetrievalQuery(message, history) {
   const expandedMessage = expandRetrievalQuery(message);
   if (!shouldUseHistoryForRetrieval(message)) return expandedMessage;
@@ -357,6 +418,7 @@ function buildRetrievalQuery(message, history) {
 function expandRetrievalQuery(message) {
   const clean = normalizePlainText(message);
   const additions = [];
+  const aggregateBreakdown = detectAggregateBreakdownIntent(message);
 
   for (const item of RETRIEVAL_EXPANSIONS) {
     const matched = item.aliases.some((alias) => phraseInText(clean, normalizePlainText(alias)));
@@ -366,6 +428,12 @@ function expandRetrievalQuery(message) {
   if (phraseInText(clean, "greater west of england") || phraseInText(clean, "gwe")) {
     additions.push(
       "Greater West of England GWE aggregate overall total Bath and North East Somerset Bristol Gloucestershire North Somerset South Gloucestershire Swindon Wiltshire local authorities"
+    );
+  }
+
+  if (aggregateBreakdown.isAggregateBreakdown) {
+    additions.push(
+      "aggregate overall regional total Greater West of England GWE combined geography row local authority breakdown constituent areas breakdown rows"
     );
   }
 

@@ -54,6 +54,47 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
     facts: [],
     documents: employmentDocuments()
   });
+  const message = "What is employment rate of the Greater West of England and could you also provide me with the employment rate of the local authorities located within the Greater West of England as well";
+  const result = await buildStatisticalAnswer({
+    supabase,
+    message,
+    contextMessage: message
+  });
+
+  assert.ok(result, "Expected aggregate-plus-breakdown employment-rate answer");
+  assert.match(result.answer, /Greater West of England for 2025 is \*\*80\.8%\*\*/i);
+  assert.match(result.answer, /local authorities within the Greater West of England/i);
+  assert.match(result.answer, /Bath and North East Somerset: \*\*75\.3%\*\*/);
+  assert.match(result.answer, /Bristol, City of: \*\*79\.5%\*\*/);
+  assert.match(result.answer, /Wiltshire: \*\*83\.1%\*\*/);
+  assert.doesNotMatch(result.answer, /average/i);
+  assert.equal(result.sources[0].title, EMPLOYMENT_POST_TITLE);
+}
+
+{
+  const supabase = createMockSupabase({
+    rows: employmentRows({ includeCounts: false }),
+    facts: [],
+    documents: employmentDocuments()
+  });
+  const result = await buildStatisticalAnswer({
+    supabase,
+    message: "What are the employment rates for local authorities within the Greater West of England?",
+    contextMessage: "What are the employment rates for local authorities within the Greater West of England?"
+  });
+
+  assert.ok(result, "Expected local-authority-only employment-rate answer");
+  assert.match(result.answer, /Bath and North East Somerset: \*\*75\.3%\*\*/);
+  assert.doesNotMatch(result.answer, /Greater West of England: \*\*80\.8%\*\*/);
+  assert.doesNotMatch(result.answer, /Greater West of England for 2025 is \*\*80\.8%\*\*/);
+}
+
+{
+  const supabase = createMockSupabase({
+    rows: employmentRows({ includeCounts: false }),
+    facts: [],
+    documents: employmentDocuments()
+  });
   const result = await buildStatisticalAnswer({
     supabase,
     message: "Can you give me the counts of the employment?",

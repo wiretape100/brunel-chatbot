@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
 import {
+  aggregateBreakdownInstruction,
+  detectAggregateBreakdownIntent
+} from "../lib/aggregate-breakdown.js";
+import {
   candidateMatchesRequestedMeasure,
   detectRequestedMeasureFamilies,
   filterCompatibleDatasetItems
@@ -8,6 +12,29 @@ import {
   selectRelevantHistoryForRetrieval,
   shouldUseHistoryForRetrieval
 } from "../lib/retrieval-context.js";
+import { scopeDatasetFallbackToArticleSources } from "../lib/source-hierarchy.js";
+
+{
+  const aggregateBreakdownQuestions = [
+    "Give me the housing affordability ratio for the Greater West of England and all local authorities.",
+    "What is the GDP for the Greater West of England and the local authority values?",
+    "Can you provide the emissions total for the Greater West of England and by local authority?",
+    "Show the NEET rate for the Greater West of England and the local authority breakdown.",
+    "What is the population of the Greater West of England and its constituent local authorities?"
+  ];
+
+  for (const message of aggregateBreakdownQuestions) {
+    const intent = detectAggregateBreakdownIntent(message);
+    assert.equal(intent.isAggregateBreakdown, true, `Expected aggregate-plus-breakdown intent: ${message}`);
+    assert.match(aggregateBreakdownInstruction(message), /Return the aggregate value first/);
+    assert.match(aggregateBreakdownInstruction(message), /Do not average percentages/);
+  }
+}
+
+{
+  assert.equal(detectAggregateBreakdownIntent("What is the employment rate of the Greater West of England?").isAggregateBreakdown, false);
+  assert.equal(detectAggregateBreakdownIntent("What are the employment rates for local authorities within the Greater West of England?").isAggregateBreakdown, false);
+}
 
 {
   assert.deepEqual(detectRequestedMeasureFamilies("What is the housing affordability ratio in Bristol?"), ["housingAffordability"]);
@@ -121,6 +148,52 @@ import {
   );
   assert.equal(filtered.length, 1);
   assert.match(filtered[0].post_title, /Greenhouse gas emissions/i);
+}
+
+{
+  const scoped = scopeDatasetFallbackToArticleSources({
+    matches: [
+      {
+        title: "Housing affordability ratios across local authorities in the Greater West of England, 2024",
+        url: "https://www.thebrunelcentre.co.uk/data-hub/housing-affordability-ratios-across-local-authorities-in-the-greater-west-of-england-2024"
+      }
+    ],
+    datasetSummaries: [
+      {
+        post_title: "Housing affordability ratios across local authorities in the Greater West of England, 2024",
+        post_url: "https://www.thebrunelcentre.co.uk/data-hub/housing-affordability-ratios-across-local-authorities-in-the-greater-west-of-england-2024"
+      },
+      {
+        post_title: "Spatial distribution of housing stock in the Greater West of England, 2024",
+        post_url: "https://www.thebrunelcentre.co.uk/data-hub/spatial-distribution-of-housing-stock-in-the-greater-west-of-england-2024"
+      }
+    ],
+    datasetRows: [
+      {
+        post_title: "Housing affordability ratios across local authorities in the Greater West of England, 2024",
+        post_url: "https://www.thebrunelcentre.co.uk/data-hub/housing-affordability-ratios-across-local-authorities-in-the-greater-west-of-england-2024"
+      },
+      {
+        post_title: "Spatial distribution of housing stock in the Greater West of England, 2024",
+        post_url: "https://www.thebrunelcentre.co.uk/data-hub/spatial-distribution-of-housing-stock-in-the-greater-west-of-england-2024"
+      }
+    ],
+    datasetFacts: [
+      {
+        post_title: "Housing affordability ratios across local authorities in the Greater West of England, 2024",
+        post_url: "https://www.thebrunelcentre.co.uk/data-hub/housing-affordability-ratios-across-local-authorities-in-the-greater-west-of-england-2024"
+      },
+      {
+        post_title: "Spatial distribution of housing stock in the Greater West of England, 2024",
+        post_url: "https://www.thebrunelcentre.co.uk/data-hub/spatial-distribution-of-housing-stock-in-the-greater-west-of-england-2024"
+      }
+    ]
+  });
+
+  assert.equal(scoped.datasetSummaries.length, 1);
+  assert.equal(scoped.datasetRows.length, 1);
+  assert.equal(scoped.datasetFacts.length, 1);
+  assert.match(scoped.datasetRows[0].post_title, /Housing affordability ratios/);
 }
 
 {

@@ -9,6 +9,8 @@
     "validate:sources": "node scripts/validate-sources.js",
     "test:catalogue": "node scripts/test-datahub-catalogue.js",
     "test:counts": "node scripts/test-count-followups.js",
+    "test:planner": "node scripts/test-question-planner.js",
+    "test:verifier": "node scripts/test-answer-verifier.js",
     "test:generic-guardrails": "node scripts/test-generic-retrieval-guardrails.js",
     "test:hardening": "node scripts/test-production-hardening.js",
     "test:retrieval": "node scripts/test-retrieval-plan.js",
