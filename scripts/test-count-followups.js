@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import { verifyAnswer } from "../lib/answer-verifier.js";
+import { buildQuestionPlan } from "../lib/question-planner.js";
+import { shouldUseHistoryForRetrieval } from "../lib/retrieval-context.js";
 import { buildStatisticalAnswer } from "../lib/statistics.js";
 
 const EMPLOYMENT_POST_TITLE = "Employment rates in the Greater West of England compared to other UK regions";
@@ -29,6 +32,64 @@ const SEX_AGE_POST_SLUG = "employment-rates-in-the-greater-west-of-england-by-se
       similarity: null
     }
   ]);
+}
+
+{
+  const supabase = createMockSupabase({
+    rows: employmentRows({ includeCounts: false }),
+    facts: [],
+    documents: employmentDocuments()
+  });
+  const message = "Do you have any numbers on inward investment?";
+  const previousEmploymentContext = [
+    "User: What is the employment rate of the Greater West of England?",
+    `Assistant: The employment rate for the Greater West of England for 2025 is 80.8%. Source: ${EMPLOYMENT_POST_TITLE}.`,
+    "User: Can you give me the employment count?",
+    "Assistant: I found the employment rate in the Brunel Centre source, but I could not find a matching employment count in the article or linked data for that source."
+  ].join("\n");
+
+  assert.equal(shouldUseHistoryForRetrieval(message), false, "Inward investment should reset employment context");
+  const result = await buildStatisticalAnswer({
+    supabase,
+    message,
+    contextMessage: message
+  });
+
+  assert.equal(result, null, "Inward investment should not trigger deterministic employment fallback");
+  assert.match(previousEmploymentContext, /employment rate/i);
+}
+
+{
+  const supabase = createMockSupabase({
+    rows: employmentRows({ includeCounts: false }),
+    facts: [],
+    documents: employmentDocuments()
+  });
+  const message = "What's the employment rate for the Greater West of England and also the local authorities within the Greater West of England?";
+  const result = await buildStatisticalAnswer({
+    supabase,
+    message,
+    contextMessage: message
+  });
+  const plan = buildQuestionPlan({ message });
+  const verified = verifyAnswer({
+    answer: result?.answer,
+    plan,
+    sources: result?.sources || []
+  });
+
+  assert.ok(result, "Expected aggregate-plus-breakdown answer for exact user wording");
+  assert.equal(verified.ok, true, "Aggregate-plus-breakdown employment answer should verify");
+  assert.doesNotMatch(result.answer, /could not verify both the aggregate value/i);
+  assert.match(result.answer, /Greater West of England for 2025 is \*\*80\.8%\*\*/i);
+  assert.match(result.answer, /Bath and North East Somerset: \*\*75\.3%\*\*/);
+  assert.match(result.answer, /Bristol, City of: \*\*79\.5%\*\*/);
+  assert.match(result.answer, /Gloucestershire: \*\*82\.0%\*\*/);
+  assert.match(result.answer, /North Somerset: \*\*82\.1%\*\*/);
+  assert.match(result.answer, /South Gloucestershire: \*\*82\.9%\*\*/);
+  assert.match(result.answer, /Swindon: \*\*76\.9%\*\*/);
+  assert.match(result.answer, /Wiltshire: \*\*83\.1%\*\*/);
+  assert.equal(result.sources[0].title, EMPLOYMENT_POST_TITLE);
 }
 
 {

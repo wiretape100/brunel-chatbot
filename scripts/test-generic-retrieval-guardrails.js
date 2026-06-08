@@ -9,6 +9,7 @@ import {
   filterCompatibleDatasetItems
 } from "../lib/measure-compatibility.js";
 import {
+  hasNewTopicOverride,
   selectRelevantHistoryForRetrieval,
   shouldUseHistoryForRetrieval
 } from "../lib/retrieval-context.js";
@@ -225,6 +226,64 @@ import { scopeDatasetFallbackToArticleSources } from "../lib/source-hierarchy.js
   );
   const query = "What is the emissions total by local authority?";
   assert.doesNotMatch(query, /Housing affordability/i);
+}
+
+{
+  const history = [
+    { role: "user", content: "What is the employment rate of the Greater West of England?" },
+    { role: "assistant", content: "The employment rate for the Greater West of England for 2025 is 80.8%. Source: Employment rates in the Greater West of England compared to other UK regions." },
+    { role: "user", content: "Can you give me the employment count?" },
+    { role: "assistant", content: "I found the employment rate in the Brunel Centre source, but I could not find a matching employment count in the article or linked data for that source." }
+  ];
+
+  const message = "Do you have any numbers on inward investment?";
+  assert.equal(hasNewTopicOverride(message), true);
+  assert.equal(shouldUseHistoryForRetrieval(message), false);
+  assert.deepEqual(selectRelevantHistoryForRetrieval(message, history), []);
+}
+
+{
+  assert.equal(
+    shouldUseHistoryForRetrieval("Can you give me the counts?"),
+    true,
+    "Short count follow-up without a new topic should preserve previous context"
+  );
+  assert.equal(
+    shouldUseHistoryForRetrieval("What are the numbers?"),
+    true,
+    "Short numbers follow-up without a new topic should preserve previous context"
+  );
+}
+
+{
+  assert.equal(
+    shouldUseHistoryForRetrieval("What about housing affordability?"),
+    false,
+    "Named housing affordability topic should reset previous context"
+  );
+  assert.equal(
+    shouldUseHistoryForRetrieval("Do you have any numbers on emissions?"),
+    false,
+    "Named emissions topic should reset previous context"
+  );
+  assert.equal(
+    shouldUseHistoryForRetrieval("Do you have any numbers on GDP?"),
+    false,
+    "Named GDP topic should reset previous context"
+  );
+}
+
+{
+  assert.equal(
+    shouldUseHistoryForRetrieval("What about Bristol?"),
+    true,
+    "Geography-only follow-up should still preserve previous context"
+  );
+  assert.equal(
+    shouldUseHistoryForRetrieval("Can you explain that?"),
+    true,
+    "Explanation follow-up should still preserve previous context"
+  );
 }
 
 console.log("Generic retrieval guardrail tests passed.");

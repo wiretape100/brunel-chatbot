@@ -98,4 +98,19 @@ import { buildQuestionPlan, planRequiresRawFacts, reasoningEffortForPlan } from 
   assert.equal(reasoningEffortForPlan(plan), "none");
 }
 
+{
+  const plan = buildQuestionPlan({
+    message: "Do you have any numbers on inward investment?",
+    history: [
+      { role: "user", content: "What is the employment rate of the Greater West of England?" },
+      { role: "assistant", content: "The employment rate is 80.8%." }
+    ]
+  });
+
+  assert.equal(plan.previousSourceRequired, false);
+  assert.equal(plan.isFollowUp, false);
+  assert.ok(plan.topics.includes("inward investment"));
+  assert.equal(plan.measureRequested, "count");
+}
+
 console.log("Question planner tests passed");
