@@ -8,6 +8,7 @@ import { checkRateLimit, getRequestIp, RATE_LIMIT_MESSAGE } from "../lib/rate-li
 import { filterCompatibleDatasetItems } from "../lib/measure-compatibility.js";
 import { buildQuestionPlan, planRequiresRawFacts } from "../lib/question-planner.js";
 import {
+  hasNewTopicOverride,
   isFollowUpReference,
   isShortOrContextualDetailFollowUp,
   selectRelevantHistoryForRetrieval,
@@ -462,6 +463,7 @@ function shouldUseHistoryForStatisticalFollowUp(message) {
     .trim();
 
   if (!clean) return false;
+  if (hasNewTopicOverride(clean)) return false;
   if (/\b(age|aged|male|female|sex|gender|split|breakdown|by|explain|difference|differences|definition|define|meaning|basically|mean|means)\b/.test(clean)) return false;
 
   return isShortOrContextualDetailFollowUp(clean) || isFollowUpReference(clean);
