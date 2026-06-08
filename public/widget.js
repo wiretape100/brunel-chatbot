@@ -323,9 +323,7 @@
       hasStarted = true;
       showStarter();
     }
-    setTimeout(function () {
-      input.focus();
-    }, 0);
+    focusInputSoon();
   });
 
   closeButton.addEventListener("click", function () {
@@ -338,6 +336,7 @@
     var text = input.value.trim();
     if (!text) return;
     input.value = "";
+    focusInputSoon();
     ask(text);
   });
 
@@ -362,6 +361,7 @@
       item.addEventListener("click", function () {
         ask(question);
         suggestions.remove();
+        focusInputSoon();
       });
       suggestions.appendChild(item);
     });
@@ -400,6 +400,7 @@
     } finally {
       setBusy(false);
       scrollToEnd();
+      focusInputSoon();
     }
   }
 
@@ -530,6 +531,25 @@
   function setBusy(value) {
     send.disabled = value;
     input.disabled = value;
+  }
+
+  function focusInputSoon() {
+    if (!panel.classList.contains("is-open")) return;
+
+    var focus = function () {
+      if (input.disabled || !panel.classList.contains("is-open")) return;
+      try {
+        input.focus({ preventScroll: true });
+      } catch (error) {
+        input.focus();
+      }
+    };
+
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(focus);
+    } else {
+      setTimeout(focus, 0);
+    }
   }
 
   function scrollToEnd() {

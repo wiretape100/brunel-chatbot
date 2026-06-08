@@ -8,6 +8,16 @@ import { checkRateLimit, getRequestIp, RATE_LIMIT_MESSAGE } from "../lib/rate-li
 import { filterCompatibleDatasetItems } from "../lib/measure-compatibility.js";
 import { buildQuestionPlan, planRequiresRawFacts } from "../lib/question-planner.js";
 import {
+  dedupeDatasetFacts,
+  dedupeDatasetRows,
+  fetchLinkedDatasetFacts,
+  fetchLinkedDatasetRows,
+  getMatchedDataHubPostUrls,
+  shouldFetchLinkedDataFallback,
+  shouldFetchLinkedDatasetFacts,
+  scopeDatasetFallbackToArticleSources
+} from "../lib/source-hierarchy.js";
+import {
   hasNewTopicOverride,
   isFollowUpReference,
   isShortOrContextualDetailFollowUp,
@@ -15,7 +25,6 @@ import {
   shouldUseHistoryForRetrieval
 } from "../lib/retrieval-context.js";
 import { buildRetrievalPlan, conceptLabel, describeRetrievalPlan, mergeSearchResults, sourceMatchesConcept } from "../lib/retrieval.js";
-import { scopeDatasetFallbackToArticleSources } from "../lib/source-hierarchy.js";
 
 const RETRIEVAL_EXPANSIONS = [
   {
@@ -59,6 +68,7 @@ For geography wording, treat "Bath", "B&NES", "BANES", and close misspellings as
 Use clear language for a general public audience.
 When you use information from the context, cite the source title in the answer.
 For every indicator, variable, aggregate value, breakdown value, count, denominator, numerator, total, detailed value or calculation request, preserve the Brunel Centre source hierarchy: use Brunel Centre article/page text first; if the value is not there, use linked Data Hub analysis rows for the same public post; if still not found, use structured raw facts for the same public post; if those are unavailable or not parseable, use fallback raw/source-data row snippets for the same public post where available; only then say the requested value is not available in the checked Brunel Centre source and linked data.
+Treat an article/page answer as incomplete when it gives only a range, highest/lowest values, selected examples, or only some of the requested breakdown categories. For full breakdown, local authority, sector, age, sex, industry, or aggregate-plus-breakdown requests, use the linked data fallback for the same public Data Hub post before saying exact values are unavailable.
 The dataset fallback is source-scoped to linked public Data Hub posts where an article/page match is available. Do not skip from article text directly to a broad unrelated source. Do not search all raw data globally before checking the linked dataset for the current article.
 For ordinary lookup answers, keep the wording natural and cite the public source title. Do not mention raw sheets, source rows, workbook internals, publishers, Supabase, embeddings, or backend methodology unless the user explicitly asks which workbook, sheet, source file, or technical method was used. For count or calculation answers, explain the public method and source title without exposing backend table or sheet names unless asked.
 For specific numerical questions, use analysis dataset rows only when article context does not include the value. Mention the public Brunel Centre source title. Do not include workbook names, sheet names, raw_data, analysis rows, raw facts, Supabase, or embedding details unless the user explicitly asks which workbook/sheet/source file was used or asks for technical methodology.
@@ -225,11 +235,27 @@ export default async function handler(req, res) {
       query: message,
       limit: retrievalPlan.isMultiConcept ? 16 : 12
     }), measureCompatibilityQuery);
+
+    const linkedDatasetRows = filterCompatibleDatasetItems(await fetchLinkedDatasetRows({
+      supabase,
+      matches,
+      questionPlan,
+      message
+    }), measureCompatibilityQuery);
+    const linkedDatasetFacts = filterCompatibleDatasetItems(await fetchLinkedDatasetFacts({
+      supabase,
+      matches,
+      questionPlan,
+      message,
+      includeRawFacts
+    }), measureCompatibilityQuery);
+    const combinedDatasetRows = dedupeDatasetRows([...rawDatasetRows, ...linkedDatasetRows]);
+    const combinedDatasetFacts = dedupeDatasetFacts([...rawDatasetFacts, ...linkedDatasetFacts]);
     const scopedDatasetContext = scopeDatasetFallbackToArticleSources({
       matches,
       datasetSummaries: rawDatasetSummaries,
-      datasetRows: rawDatasetRows,
-      datasetFacts: rawDatasetFacts
+      datasetRows: combinedDatasetRows,
+      datasetFacts: combinedDatasetFacts
     });
     const datasetSummaries = scopedDatasetContext.datasetSummaries;
     const datasetRows = scopedDatasetContext.datasetRows;
@@ -495,7 +521,7 @@ function formatDatasetContext(summaries, rows, facts, includeRawFacts) {
   }
 
   if (rows?.length) {
-    parts.push("Exact dataset rows:");
+    parts.push("Linked analysis and fallback dataset rows for selected public Data Hub post(s):");
     parts.push(
       rows
         .map((row, index) => {
@@ -506,7 +532,7 @@ function formatDatasetContext(summaries, rows, facts, includeRawFacts) {
             .join("; ");
 
           return [
-            `[Dataset row ${index + 1}] ${row.post_title}`,
+            `[${row.linked_source_scope ? "Linked source-scoped row" : "Dataset row"} ${index + 1}] ${row.post_title}`,
             `Workbook: ${row.workbook_name}`,
             row.post_url ? `URL: ${row.post_url}` : null,
             `Row: ${row.row_index}`,
@@ -826,5 +852,8 @@ export const __testHooks = {
   buildRetrievalQuery,
   selectRelevantHistoryForRetrieval,
   shouldUseHistoryForRetrieval,
-  shouldIncludeRawFacts
+  shouldIncludeRawFacts,
+  shouldFetchLinkedDataFallback,
+  shouldFetchLinkedDatasetFacts,
+  getMatchedDataHubPostUrls
 };
