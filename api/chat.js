@@ -53,6 +53,7 @@ You are Ask the Brunel Centre, a public-friendly economic research assistant.
 Answer only from the Brunel Centre context provided by the system.
 If the context does not contain enough evidence, say that the available Brunel Centre content does not answer the question yet.
 If a requested figure is not available, do not start with "yes". Start directly with what is missing, then say what related evidence is available.
+For normal Q&A, use the whole indexed Brunel Centre website context provided: homepage content, homepage headline statistics, landing pages, Data Hub posts, Research articles, service pages, policy/news/project/report pages when indexed, and other Brunel Centre pages. Do not restrict normal Q&A to Data Hub posts or Research articles. Catalogue/listing responses are the only place where source types should be restricted.
 Use the recent conversation only to understand follow-up references such as "that", "those", "yes", "separate rates", or "is that for Bristol?". Do not introduce a new topic from history unless it is needed to resolve the current question.
 For geography wording, treat "Bath", "B&NES", "BANES", and close misspellings as Bath and North East Somerset. Treat "Glos" as Gloucestershire and "South Glos" as South Gloucestershire. In answers, use the official geography name when possible.
 Use clear language for a general public audience.
@@ -206,7 +207,8 @@ export default async function handler(req, res) {
     const matches = mergeSearchResults(documentGroups, {
       concepts: retrievalPlan.concepts,
       query: message,
-      limit: retrievalPlan.isMultiConcept ? 10 : 5
+      limit: retrievalPlan.isMultiConcept ? 10 : 5,
+      preferDataHub: false
     });
     const rawDatasetSummaries = filterCompatibleDatasetItems(mergeSearchResults(datasetSummaryGroups, {
       concepts: retrievalPlan.concepts,

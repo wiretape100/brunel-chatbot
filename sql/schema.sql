@@ -17,6 +17,7 @@ create or replace function match_brunel_documents (
 )
 returns table (
   id bigint,
+  source_type text,
   title text,
   url text,
   content text,
@@ -26,6 +27,7 @@ language sql stable
 as $$
   select
     brunel_documents.id,
+    brunel_documents.source_type,
     brunel_documents.title,
     brunel_documents.url,
     brunel_documents.content,
